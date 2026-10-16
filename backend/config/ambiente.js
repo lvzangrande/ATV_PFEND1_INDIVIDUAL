@@ -1,4 +1,4 @@
-const nomesObrigatorios = ['PORT', 'DB_HOST', 'DB_PORT', 'DB_NAME'];
+const nomesObrigatorios = ['PORT', 'DB_HOST', 'DB_USER', 'DB_PORT', 'DB_NAME'];
 
 export function carregarAmbiente(arquivoDeConfiguracao){
     if(arquivoDeConfiguracao){
