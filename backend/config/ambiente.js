@@ -16,6 +16,20 @@ export function carregarAmbiente(arquivoDeConfiguracao){
         throw new Error (`Configure no .env ${ausentes.join(',')}`)
     }
     return{
-        nome
+        nomeAluno: process.env.NOME_ALUNO,
+        turma: process.env.TURMA,
+        porta: process.env.PORT,
+        ambiente: process.env.NODE_ENV || 'development'
     }
 }
+    export function exibirDiagnostico(config){
+        console.table({
+            estudante: config.nomeAluno,
+            turma: config.turma,
+            projeto: 'api-produtos',
+            node: process.version,
+            sistema: `${process.platform} ${process.arch}`,
+            diretorio: process.cwd(),
+            portaConfigurada: configuracao.porta
+        })
+    }
