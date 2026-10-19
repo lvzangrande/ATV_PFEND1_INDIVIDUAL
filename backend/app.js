@@ -16,10 +16,10 @@ const produtoController = criarProdutoController({ produtoService })
 const produtoRoutes = criarProdutoRoutes({ produtoController })
 
 app.use(express());
+
 app.get('/api/check', (req, res) => {
     res.status(200).json({ status: 'ok', mensagem: 'Servidor funcionando via HTTP!' });
 });
-
 app.use('/api/produtos_LIVRES', produtoRoutes);
 
 app.use((req, res) => {
@@ -27,6 +27,6 @@ app.use((req, res) => {
 })
 
 app.use((erro, req, res, _next) => {
-    console.error('Erro de Sistema: ', erro.mesage);
-    res.status(500).json({ erro: 'Falha interna do servidor', mensagem: erro.message || 'Erro desconhecido'});
+    console.error('Erro de Sistema: ', erro.message);
+    res.status(500).json({ erro: 'Falha interna do servidor', mensagem: erro});
 });
