@@ -84,10 +84,10 @@ export default function Home() {
   const produtosFiltrados = useMemo(() => {
     const termo = busca.trim().toLocaleLowerCase('pt-BR');
     return produtos.filter((produto) => {
-      const tipoCorrespondente = filtroTipo === 'TODOS' || produto.tipo === filtroTipo;
+      const statusCorrespondente = filtroTipo === 'TODOS' || produto.status === filtroTipo;
       const textoCorrespondente = !termo
         || `${produto.nome} ${produto.categoria}`.toLocaleLowerCase('pt-BR').includes(termo);
-      return tipoCorrespondente && textoCorrespondente;
+      return statusCorrespondente && textoCorrespondente;
     });
   }, [busca, filtroTipo, produtos]);
 
@@ -478,7 +478,7 @@ export default function Home() {
                     </thead>
                     <tbody>
                       {produtosFiltrados.map((produto) => (
-                        <tr key={`${produto.tipo}-${produto.id}`}>
+                        <tr key={`${produto.status}-${produto.id}`}>
                           <td>
                             <strong className="product-name">{produto.nome}</strong>
                             <span className="product-description">{produto.descricao || 'Sem observações'}</span>

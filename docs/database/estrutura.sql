@@ -16,46 +16,46 @@ CREATE TABLE IF NOT EXISTS `empresas` (
   UNIQUE KEY `CNPJ` (`CNPJ`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `produtos_LIVRES` (
+CREATE TABLE IF NOT EXISTS `ativos_negociaveis` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `nome` varchar(255) NOT NULL,
   `categoria` enum(
-    'Saneantes Domissanitários de Risco 1',
-    'Saneantes Domissanitários de Risco 2 de Venda Livre',
-    'Cosméticos, Produtos de Higiene Pessoal e Perfumaria',
-    'Tintas Imobiliárias, Vernizes e Seladoras',
-    'Adesivos e Colas de Uso Geral',
-    'Lubrificantes, Graxas e Fluidos Automotivos',
-    'Soluções Orgânicas Diluídas (até 60% de concentração)',
-    'Eletrólitos de Bateria Automotiva (até 40% de concentração)',
-    'Óleos Essenciais e Preparações Diluídas (até 4% de concentração)',
-    'Kits de Química Educacional e Didática'
+    'Ações brasileiras',
+    'Ações internacionais e BDRs',
+    'Fundos imobiliários (FIIs)',
+    'Fundos de índice (ETFs)',
+    'Criptomoedas',
+    'Renda fixa',
+    'Commodities',
+    'Índices de mercado',
+    'Moedas',
+    'Fundos de investimento'
   ) NOT NULL,
   `preco` decimal(10,2) DEFAULT NULL,
   `descricao` varchar(255) NOT NULL,
-  `estoque` int(11) NOT NULL,
+  `posicao` int(11) NOT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `nome` (`nome`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `produtos_NAO_LIVRES` (
+CREATE TABLE IF NOT EXISTS `ativos_monitorados` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `nome` varchar(255) NOT NULL,
   `categoria` enum(
-    'Produtos Controlados pela Polícia Federal',
-    'Produtos Controlados pelo Exército Brasileiro',
-    'Produtos Controlados pela Polícia Civil',
-    'Saneantes e Desinfetantes de Uso Hospitalar',
-    'Saneantes Restritos ao Uso Profissional',
-    'Precursores de Entorpecentes e Psicotrópicos',
-    'Precursores de Explosivos',
-    'Armas Químicas e Insumos Relacionados',
-    'Agrotóxicos e Defensivos Agrícolas Rígidos',
-    'Substâncias Químicas Puras e Solventes Concentrados'
+    'Opções',
+    'Contratos futuros',
+    'Derivativos',
+    'Ativos em observação',
+    'Ativos internacionais',
+    'Criptoativos em observação',
+    'Renda fixa com vencimento',
+    'Fundos fechados',
+    'Índices globais',
+    'Outros instrumentos financeiros'
   ) NOT NULL,
-  `preco` decimal(10,2) NOT NULL,
+  `preco` decimal(10,2) DEFAULT NULL,
   `descricao` varchar(255) NOT NULL,
-  `estoque` int(11) NOT NULL,
+  `posicao` int(11) NOT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `nome` (`nome`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -76,17 +76,17 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
 CREATE TABLE IF NOT EXISTS `vendas` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `codigo_venda` varchar(40) NOT NULL,
-  `produto_ID` int(11) NOT NULL,
+  `ativo_ID` int(11) NOT NULL,
   `empresa_ID` int(11) DEFAULT NULL,
   `quantidade` int(11) NOT NULL,
   `preco_unitario` decimal(10,2) NOT NULL,
   `data_venda` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `codigo_venda` (`codigo_venda`),
-  KEY `produto_ID` (`produto_ID`),
+  KEY `ativo_ID` (`ativo_ID`),
   KEY `empresa_ID` (`empresa_ID`),
-  CONSTRAINT `vendas_produto_livre_fk`
-    FOREIGN KEY (`produto_ID`) REFERENCES `produtos_LIVRES` (`ID`)
+  CONSTRAINT `vendas_ativo_fk`
+    FOREIGN KEY (`ativo_ID`) REFERENCES `ativos_negociaveis` (`ID`)
     ON UPDATE CASCADE,
   CONSTRAINT `vendas_empresa_fk`
     FOREIGN KEY (`empresa_ID`) REFERENCES `empresas` (`ID`)
@@ -95,89 +95,89 @@ CREATE TABLE IF NOT EXISTS `vendas` (
 
 INSERT INTO `empresas` (`nome`, `email_rep`, `CNPJ`, `descricao`)
 SELECT
-  'Empresa de demonstração',
-  'representante@exemplo.invalid',
+  'Corretora Índice Demo',
+  'contato@corretora.invalid',
   '00000000000000',
-  'Cadastro fictício utilizado nos dados iniciais do sistema.'
+  'Instituição fictícia para demonstração da carteira.'
 FROM DUAL
 WHERE NOT EXISTS (
-  SELECT 1 FROM `empresas` WHERE `nome` = 'Empresa de demonstração'
+  SELECT 1 FROM `empresas` WHERE `nome` = 'Corretora Índice Demo'
 );
 
-INSERT INTO `produtos_LIVRES` (`nome`, `categoria`, `preco`, `descricao`, `estoque`)
+INSERT INTO `ativos_negociaveis` (`nome`, `categoria`, `preco`, `descricao`, `posicao`)
 SELECT
-  'Detergente neutro',
-  'Saneantes Domissanitários de Risco 1',
-  8.90,
-  'Produto demonstrativo de venda livre.',
-  46
+  'ETF Brasil Demo',
+  'Fundos de índice (ETFs)',
+  125.40,
+  'Ativo fictício para demonstração; não representa cotação real.',
+  12
 FROM DUAL
 WHERE NOT EXISTS (
-  SELECT 1 FROM `produtos_LIVRES` WHERE `nome` = 'Detergente neutro'
+  SELECT 1 FROM `ativos_negociaveis` WHERE `nome` = 'ETF Brasil Demo'
 );
 
-INSERT INTO `produtos_LIVRES` (`nome`, `categoria`, `preco`, `descricao`, `estoque`)
+INSERT INTO `ativos_negociaveis` (`nome`, `categoria`, `preco`, `descricao`, `posicao`)
 SELECT
-  'Sabonete líquido neutro',
-  'Cosméticos, Produtos de Higiene Pessoal e Perfumaria',
-  16.50,
-  'Produto demonstrativo para higiene pessoal.',
-  31
+  'Fundo Imobiliário Demo',
+  'Fundos imobiliários (FIIs)',
+  98.75,
+  'Ativo fictício para demonstração; não representa cotação real.',
+  8
 FROM DUAL
 WHERE NOT EXISTS (
-  SELECT 1 FROM `produtos_LIVRES` WHERE `nome` = 'Sabonete líquido neutro'
+  SELECT 1 FROM `ativos_negociaveis` WHERE `nome` = 'Fundo Imobiliário Demo'
 );
 
-INSERT INTO `produtos_LIVRES` (`nome`, `categoria`, `preco`, `descricao`, `estoque`)
+INSERT INTO `ativos_negociaveis` (`nome`, `categoria`, `preco`, `descricao`, `posicao`)
 SELECT
-  'Adesivo de uso geral',
-  'Adesivos e Colas de Uso Geral',
-  12.00,
-  'Produto demonstrativo de uso geral.',
-  20
+  'CDB Demonstração',
+  'Renda fixa',
+  104.20,
+  'Ativo fictício para demonstração; não representa cotação real.',
+  5
 FROM DUAL
 WHERE NOT EXISTS (
-  SELECT 1 FROM `produtos_LIVRES` WHERE `nome` = 'Adesivo de uso geral'
+  SELECT 1 FROM `ativos_negociaveis` WHERE `nome` = 'CDB Demonstração'
 );
 
-INSERT INTO `produtos_NAO_LIVRES` (`nome`, `categoria`, `preco`, `descricao`, `estoque`)
+INSERT INTO `ativos_monitorados` (`nome`, `categoria`, `preco`, `descricao`, `posicao`)
 SELECT
-  'Item controlado de demonstração',
-  'Produtos Controlados pela Polícia Civil',
-  29.90,
-  'Registro fictício para demonstrar o controle de produtos não livres.',
-  4
+  'Opção de Compra Demo',
+  'Opções',
+  NULL,
+  'Ativo fictício acompanhado sem negociação por este painel.',
+  2
 FROM DUAL
 WHERE NOT EXISTS (
-  SELECT 1 FROM `produtos_NAO_LIVRES` WHERE `nome` = 'Item controlado de demonstração'
+  SELECT 1 FROM `ativos_monitorados` WHERE `nome` = 'Opção de Compra Demo'
 );
 
-INSERT INTO `vendas` (`codigo_venda`, `produto_ID`, `empresa_ID`, `quantidade`, `preco_unitario`, `data_venda`)
+INSERT INTO `vendas` (`codigo_venda`, `ativo_ID`, `empresa_ID`, `quantidade`, `preco_unitario`, `data_venda`)
 SELECT
-  'DEMO-20261020-001',
-  `produto`.`ID`,
-  `empresa`.`ID`,
-  2,
-  8.90,
-  '2026-10-20 10:00:00'
-FROM `produtos_LIVRES` AS `produto`
-INNER JOIN `empresas` AS `empresa` ON `empresa`.`nome` = 'Empresa de demonstração'
-WHERE `produto`.`nome` = 'Detergente neutro'
-  AND NOT EXISTS (
-    SELECT 1 FROM `vendas` WHERE `codigo_venda` = 'DEMO-20261020-001'
-  );
-
-INSERT INTO `vendas` (`codigo_venda`, `produto_ID`, `empresa_ID`, `quantidade`, `preco_unitario`, `data_venda`)
-SELECT
-  'DEMO-20261020-002',
-  `produto`.`ID`,
+  'INDICE-DEMO-001',
+  `ativo`.`ID`,
   `empresa`.`ID`,
   1,
-  16.50,
-  '2026-10-20 11:30:00'
-FROM `produtos_LIVRES` AS `produto`
-INNER JOIN `empresas` AS `empresa` ON `empresa`.`nome` = 'Empresa de demonstração'
-WHERE `produto`.`nome` = 'Sabonete líquido neutro'
+  125.40,
+  '2026-10-20 10:00:00'
+FROM `ativos_negociaveis` AS `ativo`
+INNER JOIN `empresas` AS `empresa` ON `empresa`.`nome` = 'Corretora Índice Demo'
+WHERE `ativo`.`nome` = 'ETF Brasil Demo'
   AND NOT EXISTS (
-    SELECT 1 FROM `vendas` WHERE `codigo_venda` = 'DEMO-20261020-002'
+    SELECT 1 FROM `vendas` WHERE `codigo_venda` = 'INDICE-DEMO-001'
+  );
+
+INSERT INTO `vendas` (`codigo_venda`, `ativo_ID`, `empresa_ID`, `quantidade`, `preco_unitario`, `data_venda`)
+SELECT
+  'INDICE-DEMO-002',
+  `ativo`.`ID`,
+  `empresa`.`ID`,
+  1,
+  98.75,
+  '2026-10-20 11:30:00'
+FROM `ativos_negociaveis` AS `ativo`
+INNER JOIN `empresas` AS `empresa` ON `empresa`.`nome` = 'Corretora Índice Demo'
+WHERE `ativo`.`nome` = 'Fundo Imobiliário Demo'
+  AND NOT EXISTS (
+    SELECT 1 FROM `vendas` WHERE `codigo_venda` = 'INDICE-DEMO-002'
   );
