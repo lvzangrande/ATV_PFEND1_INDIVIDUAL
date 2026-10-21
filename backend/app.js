@@ -5,29 +5,29 @@ import bcrypt from 'bcryptjs';
 import { criarPool } from './config/database.js';
 
 const categorias = {
-  LIVRE: [
-    'Saneantes Domissanitários de Risco 1',
-    'Saneantes Domissanitários de Risco 2 de Venda Livre',
-    'Cosméticos, Produtos de Higiene Pessoal e Perfumaria',
-    'Tintas Imobiliárias, Vernizes e Seladoras',
-    'Adesivos e Colas de Uso Geral',
-    'Lubrificantes, Graxas e Fluidos Automotivos',
-    'Soluções Orgânicas Diluídas (até 60% de concentração)',
-    'Eletrólitos de Bateria Automotiva (até 40% de concentração)',
-    'Óleos Essenciais e Preparações Diluídas (até 4% de concentração)',
-    'Kits de Química Educacional e Didática',
+  NEGOCIAVEL: [
+    'Ações brasileiras',
+    'Ações internacionais e BDRs',
+    'Fundos imobiliários (FIIs)',
+    'Fundos de índice (ETFs)',
+    'Criptomoedas',
+    'Renda fixa',
+    'Commodities',
+    'Índices de mercado',
+    'Moedas',
+    'Fundos de investimento',
   ],
-  CONTROLADO: [
-    'Produtos Controlados pela Polícia Federal',
-    'Produtos Controlados pelo Exército Brasileiro',
-    'Produtos Controlados pela Polícia Civil',
-    'Saneantes e Desinfetantes de Uso Hospitalar',
-    'Saneantes Restritos ao Uso Profissional',
-    'Precursores de Entorpecentes e Psicotrópicos',
-    'Precursores de Explosivos',
-    'Armas Químicas e Insumos Relacionados',
-    'Agrotóxicos e Defensivos Agrícolas Rígidos',
-    'Substâncias Químicas Puras e Solventes Concentrados',
+  MONITORADO: [
+    'Opções',
+    'Contratos futuros',
+    'Derivativos',
+    'Ativos em observação',
+    'Ativos internacionais',
+    'Criptoativos em observação',
+    'Renda fixa com vencimento',
+    'Fundos fechados',
+    'Índices globais',
+    'Outros instrumentos financeiros',
   ],
 };
 
@@ -36,35 +36,35 @@ export function criarApp({ pool = criarPool() } = {}) {
   app.use(cors());
   app.use(express.json());
 
-  async function listarProdutos() {
+  async function listarAtivos() {
     const [linhas] = await pool.query(`
-      SELECT ID AS id, nome, categoria, preco, descricao, estoque, 'LIVRE' AS tipo
-      FROM produtos_LIVRES
+      SELECT ID AS id, nome, categoria, preco, descricao, posicao, 'NEGOCIAVEL' AS status
+      FROM ativos_negociaveis
       UNION ALL
-      SELECT ID AS id, nome, categoria, preco, descricao, estoque, 'CONTROLADO' AS tipo
-      FROM produtos_NAO_LIVRES
+      SELECT ID AS id, nome, categoria, preco, descricao, posicao, 'MONITORADO' AS status
+      FROM ativos_monitorados
       ORDER BY nome
     `);
-    return linhas.map((produto) => ({
-      ...produto,
-      id: Number(produto.id),
-      preco: produto.preco === null ? null : Number(produto.preco),
-      estoque: Number(produto.estoque),
+    return linhas.map((ativo) => ({
+      ...ativo,
+      id: Number(ativo.id),
+      preco: ativo.preco === null ? null : Number(ativo.preco),
+      posicao: Number(ativo.posicao),
     }));
   }
 
-  function validarProduto(dados) {
+  function validarAtivo(dados) {
     const erros = {};
     if (typeof dados.nome !== 'string' || !dados.nome.trim() || dados.nome.length > 255) {
       erros.nome = 'Informe um nome de até 255 caracteres.';
     }
-    if (!['LIVRE', 'CONTROLADO'].includes(dados.tipo)) {
-      erros.tipo = 'Selecione um tipo de produto válido.';
-    } else if (!categorias[dados.tipo].includes(dados.categoria)) {
-      erros.categoria = 'Selecione uma categoria compatível com o tipo de produto.';
+    if (!Object.hasOwn(categorias, dados.status)) {
+      erros.status = 'Selecione um status de ativo válido.';
+    } else if (!categorias[dados.status].includes(dados.categoria)) {
+      erros.categoria = 'Selecione uma classe compatível com o status do ativo.';
     }
-    if (!Number.isSafeInteger(dados.estoque) || dados.estoque < 0 || dados.estoque > 2147483647) {
-      erros.estoque = 'O estoque deve ser um número inteiro maior ou igual a zero.';
+    if (!Number.isSafeInteger(dados.posicao) || dados.posicao < 0 || dados.posicao > 2147483647) {
+      erros.posicao = 'A posição deve ser um número inteiro maior ou igual a zero.';
     }
     if (typeof dados.descricao !== 'string' || dados.descricao.length > 255) {
       erros.descricao = 'A descrição deve ter até 255 caracteres.';
@@ -74,20 +74,15 @@ export function criarApp({ pool = criarPool() } = {}) {
       && dados.preco >= 0
       && dados.preco <= 99999999.99
       && Math.abs(dados.preco - Number(dados.preco.toFixed(2))) < 1e-8;
-    if (dados.tipo === 'CONTROLADO' && !precoValido) {
-      erros.preco = 'Informe um preço válido para produtos controlados.';
-    } else if (dados.preco !== null && dados.preco !== undefined
+    if (dados.preco !== null && dados.preco !== undefined
       && !precoValido) {
       erros.preco = 'O preço deve ter até duas casas decimais e ser menor ou igual a R$ 99.999.999,99.';
-    }
-    if (dados.tipo === 'LIVRE' && dados.preco === undefined) {
-      erros.preco = 'Informe um preço ou envie null para deixar o preço em branco.';
     }
     return erros;
   }
 
-  function tabelaDoTipo(tipo) {
-    return tipo === 'LIVRE' ? 'produtos_LIVRES' : 'produtos_NAO_LIVRES';
+  function tabelaDoStatus(status) {
+    return status === 'NEGOCIAVEL' ? 'ativos_negociaveis' : 'ativos_monitorados';
   }
 
   function validarEmpresa(dados) {
