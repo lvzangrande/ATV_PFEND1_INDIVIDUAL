@@ -1430,6 +1430,73 @@ td,
   color: #315941;
 }
 
+.market-quote {
+  color: inherit;
+  transition: background-color 160ms ease;
+}
+
+.market-quote:hover,
+.market-quote:focus-visible {
+  background: #304b3b;
+}
+
+.market-quote-arrow {
+  color: #dce8d8;
+  font-size: 10px;
+}
+
+.people-panel {
+  overflow: hidden;
+  padding: 0;
+}
+
+.people-panel-image {
+  display: block;
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  object-position: center 42%;
+}
+
+.people-panel-copy {
+  padding: 16px;
+}
+
+.people-panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.people-panel-portrait {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.people-panel-heading .overline {
+  margin-bottom: 4px;
+  font-size: 8px;
+}
+
+.people-panel-heading h2 {
+  margin: 0;
+  color: #1d392e;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.people-panel-copy > p {
+  margin: 12px 0 0;
+  color: #6e7b71;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
 .primary-button {
   background: #326c53;
 }

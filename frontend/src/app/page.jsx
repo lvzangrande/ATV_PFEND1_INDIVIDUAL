@@ -363,10 +363,18 @@ export default function Home() {
       <div className="market-strip" id="mercado" aria-label="Indicadores de mercado simulados">
         <div className="market-strip-inner">
           <span className="market-label"><i aria-hidden="true" /> MERCADO EM FOCO</span>
-          <span className="market-quote"><strong>IBOV</strong><b>132.480,24</b><em>+0,82%</em></span>
-          <span className="market-quote"><strong>USD/BRL</strong><b>5,42</b><em className="market-down">−0,17%</em></span>
-          <span className="market-quote"><strong>BTC/BRL</strong><b>362.180,50</b><em>+2,41%</em></span>
-          <span className="market-quote"><strong>ETH/BRL</strong><b>19.320,00</b><em>+1,08%</em></span>
+          <a className="market-quote" href="https://www.tradingview.com/symbols/BMFBOVESPA-IBOV/" rel="noopener noreferrer" target="_blank" aria-label="IBOV, valor ilustrativo. Abrir cotação atual no TradingView">
+            <strong>IBOV</strong><b>132.480,24</b><em>+0,82%</em><span className="market-quote-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a className="market-quote" href="https://www.tradingview.com/symbols/USDBRL/?exchange=FX_IDC" rel="noopener noreferrer" target="_blank" aria-label="Dólar por real, valor ilustrativo. Abrir cotação atual no TradingView">
+            <strong>USD/BRL</strong><b>5,42</b><em className="market-down">−0,17%</em><span className="market-quote-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a className="market-quote" href="https://www.tradingview.com/symbols/BTCBRL/?exchange=BINANCE" rel="noopener noreferrer" target="_blank" aria-label="Bitcoin por real, valor ilustrativo. Abrir cotação atual no TradingView">
+            <strong>BTC/BRL</strong><b>362.180,50</b><em>+2,41%</em><span className="market-quote-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a className="market-quote" href="https://www.tradingview.com/symbols/ETHBRL/?exchange=BINANCE" rel="noopener noreferrer" target="_blank" aria-label="Ethereum por real, valor ilustrativo. Abrir cotação atual no TradingView">
+            <strong>ETH/BRL</strong><b>19.320,00</b><em>+1,08%</em><span className="market-quote-arrow" aria-hidden="true">↗</span>
+          </a>
           <span className="market-disclaimer">Cotações simuladas</span>
         </div>
       </div>
@@ -383,7 +391,7 @@ export default function Home() {
           </div>
           <section className="market-disclaimer-banner" aria-label="Aviso sobre os dados">
             <strong>Dados de mercado</strong>
-            <span>As cotações são simuladas e não representam preços em tempo real. Este conteúdo não constitui recomendação de investimento.</span>
+            <span>Os valores desta faixa são ilustrativos. Selecione um indicador para consultar a cotação atual no TradingView. Este conteúdo não constitui recomendação de investimento.</span>
           </section>
         </section>
 
@@ -610,6 +618,20 @@ export default function Home() {
                   ))}
                 </ul>
               )}
+            </section>
+
+            <section className="panel people-panel" aria-labelledby="people-panel-title">
+              <img className="people-panel-image" src="/market-team.jpg" alt="Equipe reunida analisando informações em computadores." loading="lazy" />
+              <div className="people-panel-copy">
+                <div className="people-panel-heading">
+                  <img className="people-panel-portrait" src="/portfolio-advisor.jpg" alt="Profissional do mercado financeiro." loading="lazy" />
+                  <div>
+                    <p className="overline">PERSPECTIVA HUMANA</p>
+                    <h2 id="people-panel-title">Investimento também é sobre pessoas.</h2>
+                  </div>
+                </div>
+                <p>Organize informações, acompanhe posições e registre decisões com clareza.</p>
+              </div>
             </section>
           </aside>
         </section>
