@@ -1,6 +1,6 @@
 # Banco de dados
 
-O arquivo `estrutura.sql` contém a criação do banco `quimica`, as tabelas usadas pelo sistema e registros fictícios para demonstração. Ele se destina a uma instalação nova; `CREATE TABLE IF NOT EXISTS` não altera tabelas que já existem.
+O arquivo `estrutura.sql` contém a criação do banco `db_indice`, as tabelas usadas pelo sistema e registros fictícios para demonstração. Ele se destina a uma instalação nova; `CREATE TABLE IF NOT EXISTS` não altera tabelas que já existem.
 
 Execute na raiz do projeto com o cliente MySQL instalado:
 
@@ -8,7 +8,7 @@ Execute na raiz do projeto com o cliente MySQL instalado:
 mysql -u SEU_USUARIO -p < docs/database/estrutura.sql
 ```
 
-O comando solicitará a senha do MySQL. Depois, configure `DB_HOST`, `DB_USER`, `DB_NAME=quimica` e, se necessário, `DB_PASS` e `DB_PORT` no `backend/.env`.
+O comando solicitará a senha do MySQL. Depois, configure `DB_HOST`, `DB_USER`, `DB_NAME=db_indice` e, se necessário, `DB_PASS` e `DB_PORT` no `backend/.env`.
 
 ## Tabelas
 

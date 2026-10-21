@@ -1,4 +1,4 @@
-USE `quimica`;
+USE `db_indice`;
 
 ALTER TABLE `produtos_LIVRES`
   MODIFY `categoria` enum(

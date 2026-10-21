@@ -16,7 +16,7 @@ mysql -u SEU_USUARIO -p < docs/database/estrutura.sql
 
 O esquema e as tabelas estão documentados em [docs/database/README.md](docs/database/README.md). Para bases existentes, siga as migrations incrementais abaixo.
 
-1. Crie o banco `quimica` e as tabelas originais executando o arquivo `backend/migrations/20261019_base_do_banco.sql` no seu MySQL.
+1. Crie o banco `db_indice` e as tabelas originais executando o arquivo `backend/migrations/20261019_base_do_banco.sql` no seu MySQL.
 2. Copie `backend/.env.example` para `backend/.env` e preencha as credenciais do seu banco; a porta da API é configurada por `API_PORT` (padrão: `3001`).
 3. Execute a migração que cria a tabela de vendas e insere produtos/vendas de exemplo:
 
@@ -26,7 +26,7 @@ mysql -u SEU_USUARIO -p < backend/migrations/20261020_produtos_vendas_inserts.sq
 
 Os produtos e as duas vendas de exemplo são genéricos; a empresa de demonstração e seu CNPJ também são fictícios. O script evita repetir os registros pelo nome/código. A migração alinha as categorias `ENUM`, cria a tabela de vendas, associa vendas opcionais a empresas e amplia `usuarios.senha` para guardar hashes. Faça backup antes de aplicá-la em uma base que já contenha produtos, pois a alteração do `ENUM` pode afetar valores legados. Senhas existentes não são convertidas automaticamente; usuários novos e senhas redefinidas pelo painel são armazenados com bcrypt.
 
-No ambiente de desenvolvimento desta entrega, a migração foi aplicada e os `INSERT`s de exemplo foram confirmados no banco local `quimica`.
+No ambiente de desenvolvimento desta entrega, a migração foi aplicada e os `INSERT`s de exemplo foram confirmados no banco local `db_indice`.
 
 ## Executar a API e o Front-End
 

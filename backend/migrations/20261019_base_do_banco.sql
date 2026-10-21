@@ -1,4 +1,4 @@
--- quimica.empresas definição
+-- db_indice.empresas definição
 
 CREATE TABLE `empresas` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
@@ -13,7 +13,7 @@ CREATE TABLE `empresas` (
   );
 
 
--- quimica.produtos_LIVRES definição
+-- db_indice.produtos_LIVRES definição
 
 CREATE TABLE `produtos_LIVRES` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
@@ -27,7 +27,7 @@ CREATE TABLE `produtos_LIVRES` (
   ;
 
 
--- quimica.produtos_NAO_LIVRES definição
+-- db_indice.produtos_NAO_LIVRES definição
 
 CREATE TABLE `produtos_NAO_LIVRES` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
@@ -41,7 +41,7 @@ CREATE TABLE `produtos_NAO_LIVRES` (
 );
 
 
--- quimica.usuarios definição
+-- db_indice.usuarios definição
 
 CREATE TABLE `usuarios` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,

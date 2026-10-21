@@ -1,8 +1,8 @@
-CREATE DATABASE IF NOT EXISTS `quimica`
+CREATE DATABASE IF NOT EXISTS `db_indice`
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE `quimica`;
+USE `db_indice`;
 
 CREATE TABLE IF NOT EXISTS `empresas` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
