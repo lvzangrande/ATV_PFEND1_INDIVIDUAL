@@ -173,10 +173,10 @@ export default function Home() {
     try {
       if (produtoEmEdicao) {
         await atualizarProduto({ ...dados, id: produtoEmEdicao.id, tipo: produtoEmEdicao.tipo });
-        setAviso('Ativo atualizado no banco de dados.');
+        setAviso('Ativo atualizado na sua carteira.');
       } else {
         await criarProduto(dados);
-        setAviso('Ativo cadastrado no banco de dados.');
+        setAviso('Ativo adicionado à sua carteira.');
       }
       await atualizarPainel();
       limparFormulario();
@@ -209,7 +209,7 @@ export default function Home() {
     try {
       await removerProduto(produto);
       if (produtoEmEdicao?.id === produto.id && produtoEmEdicao.tipo === produto.tipo) limparFormulario();
-      setAviso('Ativo removido do banco de dados.');
+      setAviso('Ativo removido da sua carteira.');
       await atualizarPainel();
     } catch (falha) {
       setErro(falha.message);
@@ -245,7 +245,7 @@ export default function Home() {
       );
       setAviso('');
       setQuantidadeVenda('1');
-      setAviso('Operação registrada e posição atualizada.');
+      setAviso('Venda registrada. Sua posição foi atualizada.');
       await atualizarPainel();
     } catch (falha) {
       setErro(falha.message);
@@ -262,10 +262,10 @@ export default function Home() {
     try {
       if (empresaEmEdicao) {
         await atualizarEmpresa({ ...formularioEmpresa, id: empresaEmEdicao.id });
-        setAviso('Organização atualizada no banco de dados.');
+        setAviso('Organização atualizada.');
       } else {
         await criarEmpresa(formularioEmpresa);
-        setAviso('Organização cadastrada no banco de dados.');
+        setAviso('Organização adicionada.');
       }
       setFormularioEmpresa({ nome: '', email_rep: '', CNPJ: '', descricao: '' });
       setEmpresaEmEdicao(null);
@@ -285,10 +285,10 @@ export default function Home() {
     try {
       if (usuarioEmEdicao) {
         await atualizarUsuario({ ...formularioUsuario, id: usuarioEmEdicao.id });
-        setAviso('Investidor atualizado no banco de dados.');
+        setAviso('Cadastro do investidor atualizado.');
       } else {
         await criarUsuario(formularioUsuario);
-        setAviso('Investidor cadastrado no banco de dados.');
+        setAviso('Investidor adicionado.');
       }
       setFormularioUsuario({ nome: '', email: '', CPF: '', CNPJ: '', senha: '' });
       setUsuarioEmEdicao(null);
@@ -310,7 +310,7 @@ export default function Home() {
         setEmpresaEmEdicao(null);
         setFormularioEmpresa({ nome: '', email_rep: '', CNPJ: '', descricao: '' });
       }
-      setAviso('Organização removida do banco de dados.');
+      setAviso('Organização removida.');
       await atualizarPainel();
     } catch (falha) {
       setErro(falha.message);
@@ -327,7 +327,7 @@ export default function Home() {
         setUsuarioEmEdicao(null);
         setFormularioUsuario({ nome: '', email: '', CPF: '', CNPJ: '', senha: '' });
       }
-      setAviso('Investidor removido do banco de dados.');
+      setAviso('Investidor removido.');
       await atualizarPainel();
     } catch (falha) {
       setErro(falha.message);
@@ -340,7 +340,7 @@ export default function Home() {
         <div className="topbar-inner">
           <a className="brand" href="#inicio" aria-label="Índice, início">
             <span className="brand-icon" aria-hidden="true">I</span>
-            <span><strong>ÍNDICE</strong><small>ASSET TERMINAL</small></span>
+            <span><strong>ÍNDICE</strong><small>SEU ESPAÇO DE INVESTIMENTO</small></span>
           </a>
           <nav className="top-nav" aria-label="Navegação principal">
             <a className="nav-active" href="#mercado">Visão geral</a>
@@ -354,9 +354,8 @@ export default function Home() {
               {carregando ? 'Sincronizando' : erro ? 'Desconectado' : 'Conectado'}
             </span>
             <a className="profile-link" href="#administracao" aria-label="Acessar investidores">
-              <span className="profile-avatar" aria-hidden="true">INV</span>
-              <span>Investidor</span>
-              <span className="profile-chevron" aria-hidden="true">⌄</span>
+              <span className="profile-avatar" aria-hidden="true">D</span>
+              <span>Modo demonstração</span>
             </a>
           </div>
         </div>
@@ -384,33 +383,33 @@ export default function Home() {
             <a className="primary-button" href="#cadastro">＋ Novo ativo</a>
           </div>
           <section className="market-disclaimer-banner" aria-label="Aviso sobre os dados">
-            <strong>Ambiente demonstrativo</strong>
-            <span>Cotações e variações são ilustrativas, não representam dados em tempo real nem recomendação de investimento.</span>
+            <strong>Uma observação importante</strong>
+            <span>Os valores são fictícios: esta demonstração não mostra cotações ao vivo nem recomenda investimentos.</span>
           </section>
         </section>
 
         <section className="portfolio-overview" aria-label="Resumo da carteira">
           <div className="overview-heading">
-            <div><p className="overline">VISÃO DA CARTEIRA</p><h2>Indicadores principais</h2></div>
+            <div><p className="overline">VISÃO DA CARTEIRA</p><h2>Resumo da sua carteira</h2></div>
             <span className="overview-period">POSIÇÃO ATUAL</span>
           </div>
           <div className="stats-grid">
-          <article className="stat-card">
-            <span className="stat-icon icon-blue" aria-hidden="true">▦</span>
-            <div><p>Ativos acompanhados</p><strong>{resumo.produtos}</strong></div>
-          </article>
-          <article className="stat-card">
-            <span className="stat-icon icon-green" aria-hidden="true">✓</span>
-            <div><p>Unidades em posição</p><strong>{resumo.unidades}</strong></div>
-          </article>
-          <article className="stat-card">
-            <span className="stat-icon icon-amber" aria-hidden="true">↗</span>
-            <div><p>Operações registradas</p><strong>{resumo.vendas}</strong></div>
-          </article>
-          <article className="stat-card">
-            <span className="stat-icon icon-purple" aria-hidden="true">R$</span>
-            <div><p>Volume movimentado</p><strong>{formatarMoeda(resumo.totalVendido)}</strong></div>
-          </article>
+            <article className="stat-card">
+              <span className="stat-icon icon-blue" aria-hidden="true">▦</span>
+              <div><p>Ativos acompanhados</p><strong>{resumo.produtos}</strong></div>
+            </article>
+            <article className="stat-card">
+              <span className="stat-icon icon-green" aria-hidden="true">✓</span>
+              <div><p>Unidades em posição</p><strong>{resumo.unidades}</strong></div>
+            </article>
+            <article className="stat-card">
+              <span className="stat-icon icon-amber" aria-hidden="true">↗</span>
+              <div><p>Operações registradas</p><strong>{resumo.vendas}</strong></div>
+            </article>
+            <article className="stat-card">
+              <span className="stat-icon icon-purple" aria-hidden="true">R$</span>
+              <div><p>Volume movimentado</p><strong>{formatarMoeda(resumo.totalVendido)}</strong></div>
+            </article>
           </div>
         </section>
 
