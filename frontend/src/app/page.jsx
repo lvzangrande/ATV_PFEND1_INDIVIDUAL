@@ -352,22 +352,22 @@ export default function Home() {
               <i className={apiIndisponivel ? 'connection-dot connection-error' : 'connection-dot'} aria-hidden="true" />
               {carregando ? 'Sincronizando' : apiIndisponivel ? 'API indisponível' : 'Conectado'}
             </span>
-            <span className="profile-link" aria-label="Modo demonstração">
-              <span className="profile-avatar" aria-hidden="true">D</span>
-              <span>Modo demonstração</span>
+            <span className="profile-link" aria-label="Carteira">
+              <span className="profile-avatar" aria-hidden="true">C</span>
+              <span>Carteira</span>
             </span>
           </div>
         </div>
       </header>
 
-      <div className="market-strip" id="mercado" aria-label="Indicadores de mercado ilustrativos">
+      <div className="market-strip" id="mercado" aria-label="Indicadores de mercado simulados">
         <div className="market-strip-inner">
           <span className="market-label"><i aria-hidden="true" /> MERCADO EM FOCO</span>
           <span className="market-quote"><strong>IBOV</strong><b>132.480,24</b><em>+0,82%</em></span>
           <span className="market-quote"><strong>USD/BRL</strong><b>5,42</b><em className="market-down">−0,17%</em></span>
           <span className="market-quote"><strong>BTC/BRL</strong><b>362.180,50</b><em>+2,41%</em></span>
           <span className="market-quote"><strong>ETH/BRL</strong><b>19.320,00</b><em>+1,08%</em></span>
-          <span className="market-disclaimer">Indicadores ilustrativos</span>
+          <span className="market-disclaimer">Cotações simuladas</span>
         </div>
       </div>
 
@@ -375,15 +375,15 @@ export default function Home() {
         <section className="dashboard-intro">
           <div className="welcome">
             <div>
-              <p className="overline">PAINEL DE INVESTIMENTOS <span className="live-indicator">DEMONSTRAÇÃO</span></p>
+              <p className="overline">PAINEL DE INVESTIMENTOS <span className="live-indicator">MERCADO</span></p>
               <h1>Mercado em perspectiva</h1>
               <p>Acompanhe ativos, organize posições e registre suas operações em um só lugar.</p>
             </div>
             <a className="primary-button" href="#cadastro">＋ Novo ativo</a>
           </div>
           <section className="market-disclaimer-banner" aria-label="Aviso sobre os dados">
-            <strong>Uma observação importante</strong>
-            <span>Os valores são fictícios: esta demonstração não mostra cotações ao vivo nem recomenda investimentos.</span>
+            <strong>Dados de mercado</strong>
+            <span>As cotações são simuladas e não representam preços em tempo real. Este conteúdo não constitui recomendação de investimento.</span>
           </section>
         </section>
 
@@ -561,7 +561,7 @@ export default function Home() {
                 <div><p className="overline">ORDEM MANUAL</p><h2>Registrar venda</h2></div>
                 <span className="sale-icon" aria-hidden="true">↗</span>
               </div>
-              <p className="helper-copy">Registre uma venda simulada e acompanhe a redução da posição.</p>
+              <p className="helper-copy">Registre uma operação e acompanhe a atualização da posição.</p>
               <form className="sale-form" onSubmit={registrarVenda}>
                 <label className="form-field">
                   Ativo
@@ -589,7 +589,7 @@ export default function Home() {
                   {registrandoVenda ? 'Registrando...' : 'Registrar venda'}
                 </button>
               </form>
-              <p className="form-guidance">A venda é registrada no banco e reduz as unidades disponíveis. Este painel demonstrativo não envia ordens para corretoras.</p>
+              <p className="form-guidance">Esta operação atualiza a posição registrada no sistema e não é enviada a uma corretora.</p>
             </section>
 
             <section className="panel sales-panel">
@@ -727,7 +727,7 @@ export default function Home() {
         </section>
 
         <footer className="page-footer">
-          Índice <span>·</span> Acompanhamento demonstrativo de ações, criptoativos e mercado financeiro.
+          Índice <span>·</span> Acompanhamento de ações, criptoativos e indicadores do mercado financeiro.
         </footer>
       </div>
     </main>
