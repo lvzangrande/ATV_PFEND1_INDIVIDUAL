@@ -146,7 +146,7 @@ export default function Home() {
       return;
     }
     if (!Number.isSafeInteger(estoque) || estoque < 0) {
-      setErro('O estoque deve ser um número inteiro igual ou maior que zero.');
+      setErro('A posição deve ser um número inteiro igual ou maior que zero.');
       return;
     }
     if (formulario.tipo === 'CONTROLADO' && (preco === null || !Number.isFinite(preco) || preco < 0)) {
@@ -230,7 +230,7 @@ export default function Home() {
       return;
     }
     if (quantidade > produto.estoque) {
-      setErro(`Estoque insuficiente. Disponível: ${produto.estoque}.`);
+      setErro(`Posição insuficiente. Unidades disponíveis: ${produto.estoque}.`);
       return;
     }
 
@@ -262,10 +262,10 @@ export default function Home() {
     try {
       if (empresaEmEdicao) {
         await atualizarEmpresa({ ...formularioEmpresa, id: empresaEmEdicao.id });
-        setAviso('Empresa atualizada no banco de dados.');
+        setAviso('Organização atualizada no banco de dados.');
       } else {
         await criarEmpresa(formularioEmpresa);
-        setAviso('Empresa cadastrada no banco de dados.');
+        setAviso('Organização cadastrada no banco de dados.');
       }
       setFormularioEmpresa({ nome: '', email_rep: '', CNPJ: '', descricao: '' });
       setEmpresaEmEdicao(null);
@@ -285,10 +285,10 @@ export default function Home() {
     try {
       if (usuarioEmEdicao) {
         await atualizarUsuario({ ...formularioUsuario, id: usuarioEmEdicao.id });
-        setAviso('Usuário atualizado no banco de dados.');
+        setAviso('Investidor atualizado no banco de dados.');
       } else {
         await criarUsuario(formularioUsuario);
-        setAviso('Usuário cadastrado no banco de dados.');
+        setAviso('Investidor cadastrado no banco de dados.');
       }
       setFormularioUsuario({ nome: '', email: '', CPF: '', CNPJ: '', senha: '' });
       setUsuarioEmEdicao(null);
@@ -301,7 +301,7 @@ export default function Home() {
   }
 
   async function excluirEmpresa(empresa) {
-    if (!window.confirm(`Excluir a empresa "${empresa.nome}"?`)) return;
+    if (!window.confirm(`Remover a organização "${empresa.nome}"?`)) return;
     setErro('');
     setAviso('');
     try {
@@ -310,7 +310,7 @@ export default function Home() {
         setEmpresaEmEdicao(null);
         setFormularioEmpresa({ nome: '', email_rep: '', CNPJ: '', descricao: '' });
       }
-      setAviso('Empresa excluída do banco de dados.');
+      setAviso('Organização removida do banco de dados.');
       await atualizarPainel();
     } catch (falha) {
       setErro(falha.message);
@@ -318,7 +318,7 @@ export default function Home() {
   }
 
   async function excluirUsuario(usuario) {
-    if (!window.confirm(`Excluir o usuário "${usuario.nome}"?`)) return;
+    if (!window.confirm(`Remover o investidor "${usuario.nome}"?`)) return;
     setErro('');
     setAviso('');
     try {
@@ -327,7 +327,7 @@ export default function Home() {
         setUsuarioEmEdicao(null);
         setFormularioUsuario({ nome: '', email: '', CPF: '', CNPJ: '', senha: '' });
       }
-      setAviso('Usuário excluído do banco de dados.');
+      setAviso('Investidor removido do banco de dados.');
       await atualizarPainel();
     } catch (falha) {
       setErro(falha.message);
