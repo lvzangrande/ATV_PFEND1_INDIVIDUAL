@@ -149,7 +149,7 @@ export function criarApp({ pool = criarPool() } = {}) {
     const [empresas] = await pool.query('SELECT COUNT(*) AS quantidade FROM empresas');
     const [usuarios] = await pool.query('SELECT COUNT(*) AS quantidade FROM usuarios');
     res.status(200).json({
-      produtos: Number(ativos[0].quantidade),
+      ativos: Number(ativos[0].quantidade),
       unidades: Number(ativos[0].unidades),
       vendas: Number(vendas[0].quantidade),
       totalVendido: Number(vendas[0].total),

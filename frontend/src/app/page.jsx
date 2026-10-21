@@ -60,7 +60,7 @@ export default function Home() {
   const [vendas, setVendas] = useState([]);
   const [empresas, setEmpresas] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
-  const [resumo, setResumo] = useState({ produtos: 0, unidades: 0, vendas: 0, totalVendido: 0 });
+  const [resumo, setResumo] = useState({ ativos: 0, unidades: 0, vendas: 0, totalVendido: 0 });
   const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando] = useState(false);
   const [filtroTipo, setFiltroTipo] = useState('TODOS');
@@ -198,7 +198,7 @@ export default function Home() {
     });
     setErro('');
     setAviso('');
-    document.getElementById('form-produto')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('form-ativo')?.scrollIntoView({ behavior: 'smooth' });
   }
 
   async function excluirProduto(produto) {
@@ -395,7 +395,7 @@ export default function Home() {
           <div className="stats-grid">
             <article className="stat-card">
               <span className="stat-icon icon-blue" aria-hidden="true">▦</span>
-              <div><p>Ativos acompanhados</p><strong>{resumo.produtos}</strong></div>
+              <div><p>Ativos acompanhados</p><strong>{resumo.ativos}</strong></div>
             </article>
             <article className="stat-card">
               <span className="stat-icon icon-green" aria-hidden="true">✓</span>
@@ -480,15 +480,15 @@ export default function Home() {
                       {produtosFiltrados.map((produto) => (
                         <tr key={`${produto.status}-${produto.id}`}>
                           <td>
-                            <strong className="product-name">{produto.nome}</strong>
-                            <span className="product-description">{produto.descricao || 'Sem observações'}</span>
+                            <strong className="asset-name">{produto.nome}</strong>
+                            <span className="asset-description">{produto.descricao || 'Sem observações'}</span>
                           </td>
                           <td className="category-cell">{produto.categoria}</td>
-                          <td><span className={`type-badge ${produto.status === 'NEGOCIAVEL' ? 'type-free' : 'type-controlled'}`}>
+                          <td><span className={`type-badge ${produto.status === 'NEGOCIAVEL' ? 'type-negotiable' : 'type-monitored'}`}>
                             {produto.status === 'NEGOCIAVEL' ? 'Negociável' : 'Monitoramento'}
                           </span></td>
                           <td className="price-cell">{formatarMoeda(produto.preco)}</td>
-                          <td><span className={`stock-value ${produto.posicao < 10 ? 'stock-low' : ''}`}>{produto.posicao}</span></td>
+                          <td><span className={`position-value ${produto.posicao < 10 ? 'position-low' : ''}`}>{produto.posicao}</span></td>
                           <td>
                             <div className="table-actions">
                               <button aria-label={`Editar ${produto.nome}`} className="icon-button" onClick={() => editarProduto(produto)} title="Editar" type="button">✎</button>
@@ -509,7 +509,7 @@ export default function Home() {
                 <div><p className="overline">CARTEIRA</p><h2>{produtoEmEdicao ? 'Editar ativo' : 'Cadastrar ativo'}</h2></div>
                 {produtoEmEdicao && <button className="quiet-button" onClick={limparFormulario} type="button">Cancelar edição</button>}
               </div>
-              <form className="product-form" id="form-produto" onSubmit={salvarProduto}>
+              <form className="asset-form" id="form-ativo" onSubmit={salvarProduto}>
                 <label className="form-field">
                   Nome ou ticker <span>*</span>
                   <input maxLength="255" name="nome" onChange={alterarCampo} required value={formulario.nome} disabled={salvando} />
