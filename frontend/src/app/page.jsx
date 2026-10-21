@@ -339,16 +339,26 @@ export default function Home() {
       <header className="topbar">
         <div className="topbar-inner">
           <a className="brand" href="#inicio" aria-label="Índice, início">
-            <span className="brand-icon" aria-hidden="true">↗</span>
-            <span><strong>Índice</strong><small>MERCADO FINANCEIRO</small></span>
+            <span className="brand-icon" aria-hidden="true">I</span>
+            <span><strong>ÍNDICE</strong><small>ASSET TERMINAL</small></span>
           </a>
           <nav className="top-nav" aria-label="Navegação principal">
-            <a className="nav-active" href="#mercado">Mercado</a>
+            <a className="nav-active" href="#mercado">Visão geral</a>
             <a href="#catalogo">Ativos</a>
-            <a href="#operacoes">Operações</a>
-            <a href="#administracao">Participantes</a>
+            <a href="#operacoes">Negociação</a>
+            <a href="#administracao">Investidores</a>
           </nav>
-          <span className="topbar-note">{carregando ? 'Sincronizando...' : erro ? 'API indisponível' : 'API conectada'}</span>
+          <div className="topbar-tools">
+            <span className="topbar-note">
+              <i className={erro ? 'connection-dot connection-error' : 'connection-dot'} aria-hidden="true" />
+              {carregando ? 'Sincronizando' : erro ? 'Desconectado' : 'Conectado'}
+            </span>
+            <a className="profile-link" href="#administracao" aria-label="Acessar investidores">
+              <span className="profile-avatar" aria-hidden="true">INV</span>
+              <span>Investidor</span>
+              <span className="profile-chevron" aria-hidden="true">⌄</span>
+            </a>
+          </div>
         </div>
       </header>
 
@@ -364,21 +374,27 @@ export default function Home() {
       </div>
 
       <div className="page-wrap" id="inicio">
-        <section className="welcome">
-          <div>
-            <p className="overline">PAINEL DE INVESTIMENTOS <span className="live-indicator">DEMONSTRAÇÃO</span></p>
-            <h1>Mercado em perspectiva</h1>
-            <p>Acompanhe ativos, organize posições e registre suas operações em um só lugar.</p>
+        <section className="dashboard-intro">
+          <div className="welcome">
+            <div>
+              <p className="overline">PAINEL DE INVESTIMENTOS <span className="live-indicator">DEMONSTRAÇÃO</span></p>
+              <h1>Mercado em perspectiva</h1>
+              <p>Acompanhe ativos, organize posições e registre suas operações em um só lugar.</p>
+            </div>
+            <a className="primary-button" href="#cadastro">＋ Novo ativo</a>
           </div>
-          <a className="primary-button" href="#cadastro">＋ Novo ativo</a>
+          <section className="market-disclaimer-banner" aria-label="Aviso sobre os dados">
+            <strong>Ambiente demonstrativo</strong>
+            <span>Cotações e variações são ilustrativas, não representam dados em tempo real nem recomendação de investimento.</span>
+          </section>
         </section>
 
-        <section className="market-disclaimer-banner" aria-label="Aviso sobre os dados">
-          <strong>Ambiente demonstrativo</strong>
-          <span>Cotações e variações são ilustrativas, não representam dados em tempo real nem recomendação de investimento.</span>
-        </section>
-
-        <section className="stats-grid" aria-label="Resumo da carteira">
+        <section className="portfolio-overview" aria-label="Resumo da carteira">
+          <div className="overview-heading">
+            <div><p className="overline">VISÃO DA CARTEIRA</p><h2>Indicadores principais</h2></div>
+            <span className="overview-period">POSIÇÃO ATUAL</span>
+          </div>
+          <div className="stats-grid">
           <article className="stat-card">
             <span className="stat-icon icon-blue" aria-hidden="true">▦</span>
             <div><p>Ativos acompanhados</p><strong>{resumo.produtos}</strong></div>
@@ -395,6 +411,7 @@ export default function Home() {
             <span className="stat-icon icon-purple" aria-hidden="true">R$</span>
             <div><p>Volume movimentado</p><strong>{formatarMoeda(resumo.totalVendido)}</strong></div>
           </article>
+          </div>
         </section>
 
         {(erro || aviso) && (
