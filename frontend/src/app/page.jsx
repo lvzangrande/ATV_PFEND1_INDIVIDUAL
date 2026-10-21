@@ -604,7 +604,7 @@ export default function Home() {
                   {vendas.slice(0, 5).map((venda) => (
                     <li key={venda.id}>
                       <span className="sale-dot" aria-hidden="true">✓</span>
-                          <span className="sale-description"><strong>{venda.produto}</strong><small>{venda.quantidade} un. · {venda.data}{venda.empresa ? ` · ${venda.empresa}` : ''}</small></span>
+                          <span className="sale-description"><strong>{venda.ativo}</strong><small>{venda.quantidade} un. · {venda.data}{venda.empresa ? ` · ${venda.empresa}` : ''}</small></span>
                       <strong className="sale-total">{formatarMoeda(venda.quantidade * venda.preco)}</strong>
                     </li>
                   ))}

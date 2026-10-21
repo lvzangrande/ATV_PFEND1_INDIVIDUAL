@@ -18,8 +18,9 @@ export function criarProdutoService({produtoModel}){
         return produtoModel.criar({
             nome:produto.nome,
             preco:produto.preco,
-            estoque:produto.estoque,
-            categoria:produto.categoria
+            posicao: produto.posicao,
+            categoria: produto.categoria,
+            descricao: produto.descricao,
         });
     }
     return {listar, buscarPorId, criar}

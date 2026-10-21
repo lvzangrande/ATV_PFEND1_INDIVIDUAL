@@ -1,30 +1,48 @@
-export default class Produto{
-    constructor({id,nome,preco,categoria,estoque=0, descricao}){
-        if(!Number.isInteger(id) || id <=0){
-            throw new TypeError('Id deve ser inteiro ou maior que 0');
+const categorias = [
+    'Ações brasileiras',
+    'Ações internacionais e BDRs',
+    'Fundos imobiliários (FIIs)',
+    'Fundos de índice (ETFs)',
+    'Criptomoedas',
+    'Renda fixa',
+    'Commodities',
+    'Índices de mercado',
+    'Moedas',
+    'Fundos de investimento',
+];
+
+export default class Produto {
+    constructor({ id, nome, preco, categoria, posicao = 0, descricao }) {
+        if (!Number.isInteger(id) || id <= 0) {
+            throw new TypeError('O identificador deve ser um inteiro positivo.');
         }
-        if(typeof nome !== 'string' || nome.trim()===''){
-            throw new TypeError('Nome é obrigatorio');
+        if (typeof nome !== 'string' || nome.trim() === '') {
+            throw new TypeError('Informe o nome do ativo.');
         }
-        if(!Number.isFinite(preco) || preco > 0){
-            throw new TypeError('Preço deve ser válido');
+        if (!Number.isFinite(preco) || preco < 0) {
+            throw new TypeError('O preço deve ser um número igual ou maior que zero.');
         }
-        if(!Number.isInteger(estoque)|| estoque < 0){
-            throw new TypeError('Estoque deve ser inteiro, maior ou igual a 0');
+        if (!Number.isInteger(posicao) || posicao < 0) {
+            throw new TypeError('A posição deve ser um inteiro igual ou maior que zero.');
         }
-        if(typeof categoria !== 'string' || !['precursores químicos controlados','solventes controlados','ácidos controlados','bases controladas','reagentes químicos controlados','fármacos e substâncias farmacêuticas controladas','adulterantes e diluentes controlados','oxidantes controlados','substâncias químicas tóxicas de uso restrito','produtos químicos para uso militar','explosivos e seus precursores controlados','substâncias radioativas controladas','agrotóxicos sujeitos a controle especial','produtos químicos sujeitos a autorização de importação ou exportação','substâncias sujeitas a controle sanitário especial','produtos de limpeza','detergentes','sabões','desinfetantes','alvejantes','removedores','desengordurantes','neutralizadores de odores','aromatizantes de ambientes','cosméticos','produtos de higiene pessoal','perfumes','solventes','tintas','vernizes','esmaltes','adesivos','colas','lubrificantes','óleos industriais','combustíveis','gases industriais','fertilizantes','corretivos de solo','produtos para tratamento de água','reagentes laboratoriais','produtos químicos inorgânicos','produtos químicos orgânicos','sais minerais','ácidos de uso comum','bases de uso comum','produtos para piscinas','produtos automotivos','ceras e polidores','resinas','plásticos','borrachas sintéticas','pigmentos','corantes','produtos fotográficos','produtos para tratamento de madeira','produtos para manutenção doméstica']){
-            throw new TypeError('A resposta deve corresponder com as categorias existentes')
+        if (typeof categoria !== 'string' || !categorias.includes(categoria)) {
+            throw new TypeError('Selecione uma classe de ativo válida.');
+        }
+        if (typeof descricao !== 'string') {
+            throw new TypeError('A descrição deve ser informada.');
         }
 
-        if(typeof descricao !== 'string' || descricao.trim() ===''){
-            throw new TypeError('A Descricao deve ser informada')
-        }
-
-        Object.assign(this,{
-            id,nome: nome.trim(), preco:preco,estoque:estoque,categoria:categoria.trim()
+        Object.assign(this, {
+            id,
+            nome: nome.trim(),
+            preco,
+            posicao,
+            categoria,
+            descricao: descricao.trim(),
         });
     }
-        calcularValorEmEstoque(){
-            return this.preco * this.estoque;
-        }
-};
+
+    calcularValorEmPosicao() {
+        return this.preco * this.posicao;
+    }
+}
