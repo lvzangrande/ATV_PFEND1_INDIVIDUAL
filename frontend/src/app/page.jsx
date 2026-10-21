@@ -16,29 +16,29 @@ import {
 } from '@/services/api';
 
 const categoriasLivres = [
-  'Saneantes Domissanitários de Risco 1',
-  'Saneantes Domissanitários de Risco 2 de Venda Livre',
-  'Cosméticos, Produtos de Higiene Pessoal e Perfumaria',
-  'Tintas Imobiliárias, Vernizes e Seladoras',
-  'Adesivos e Colas de Uso Geral',
-  'Lubrificantes, Graxas e Fluidos Automotivos',
-  'Soluções Orgânicas Diluídas (até 60% de concentração)',
-  'Eletrólitos de Bateria Automotiva (até 40% de concentração)',
-  'Óleos Essenciais e Preparações Diluídas (até 4% de concentração)',
-  'Kits de Química Educacional e Didática',
+  'Ações brasileiras',
+  'Ações internacionais e BDRs',
+  'Fundos imobiliários (FIIs)',
+  'Fundos de índice (ETFs)',
+  'Criptomoedas',
+  'Renda fixa',
+  'Commodities',
+  'Índices de mercado',
+  'Moedas',
+  'Fundos de investimento',
 ];
 
 const categoriasControladas = [
-  'Produtos Controlados pela Polícia Federal',
-  'Produtos Controlados pelo Exército Brasileiro',
-  'Produtos Controlados pela Polícia Civil',
-  'Saneantes e Desinfetantes de Uso Hospitalar',
-  'Saneantes Restritos ao Uso Profissional',
-  'Precursores de Entorpecentes e Psicotrópicos',
-  'Precursores de Explosivos',
-  'Armas Químicas e Insumos Relacionados',
-  'Agrotóxicos e Defensivos Agrícolas Rígidos',
-  'Substâncias Químicas Puras e Solventes Concentrados',
+  'Opções',
+  'Contratos futuros',
+  'Derivativos',
+  'Ativos em observação',
+  'Ativos internacionais',
+  'Criptoativos em observação',
+  'Renda fixa com vencimento',
+  'Fundos fechados',
+  'Índices globais',
+  'Outros instrumentos financeiros',
 ];
 
 const formularioInicial = {
@@ -138,11 +138,11 @@ export default function Home() {
     const estoque = Number(formulario.estoque);
 
     if (!formulario.nome.trim()) {
-      setErro('Informe o nome do produto.');
+      setErro('Informe o nome do ativo.');
       return;
     }
     if (!categoriaValida.includes(formulario.categoria)) {
-      setErro('Selecione uma categoria válida para o tipo de produto.');
+      setErro('Selecione uma classe de ativo válida.');
       return;
     }
     if (!Number.isSafeInteger(estoque) || estoque < 0) {
@@ -150,7 +150,7 @@ export default function Home() {
       return;
     }
     if (formulario.tipo === 'CONTROLADO' && (preco === null || !Number.isFinite(preco) || preco < 0)) {
-      setErro('Informe um preço válido para produtos controlados.');
+      setErro('Informe um preço válido para este ativo.');
       return;
     }
     if (preco !== null && (!Number.isFinite(preco) || preco < 0)) {
@@ -173,10 +173,10 @@ export default function Home() {
     try {
       if (produtoEmEdicao) {
         await atualizarProduto({ ...dados, id: produtoEmEdicao.id, tipo: produtoEmEdicao.tipo });
-        setAviso('Produto atualizado no banco de dados.');
+        setAviso('Ativo atualizado no banco de dados.');
       } else {
         await criarProduto(dados);
-        setAviso('Produto cadastrado no banco de dados.');
+        setAviso('Ativo cadastrado no banco de dados.');
       }
       await atualizarPainel();
       limparFormulario();
@@ -203,13 +203,13 @@ export default function Home() {
   }
 
   async function excluirProduto(produto) {
-    if (!window.confirm(`Excluir "${produto.nome}" do banco de dados?`)) return;
+    if (!window.confirm(`Remover o ativo "${produto.nome}" do banco de dados?`)) return;
     setErro('');
     setAviso('');
     try {
       await removerProduto(produto);
       if (produtoEmEdicao?.id === produto.id && produtoEmEdicao.tipo === produto.tipo) limparFormulario();
-      setAviso('Produto excluído do banco de dados.');
+      setAviso('Ativo removido do banco de dados.');
       await atualizarPainel();
     } catch (falha) {
       setErro(falha.message);
@@ -222,7 +222,7 @@ export default function Home() {
     const quantidade = Number(quantidadeVenda);
 
     if (!produto || produto.tipo !== 'LIVRE' || produto.preco === null) {
-      setErro('Selecione um produto de venda livre com preço definido.');
+      setErro('Selecione um ativo negociável com preço definido.');
       return;
     }
     if (!Number.isSafeInteger(quantidade) || quantidade < 1) {
@@ -245,7 +245,7 @@ export default function Home() {
       );
       setAviso('');
       setQuantidadeVenda('1');
-      setAviso('Venda registrada no banco de dados e estoque atualizado.');
+      setAviso('Operação registrada e posição atualizada.');
       await atualizarPainel();
     } catch (falha) {
       setErro(falha.message);
@@ -338,46 +338,62 @@ export default function Home() {
     <main>
       <header className="topbar">
         <div className="topbar-inner">
-          <a className="brand" href="#" aria-label="Química Comercial, início">
-            <span className="brand-icon" aria-hidden="true">Q</span>
-            <span><strong>Química</strong><small>COMERCIAL</small></span>
+          <a className="brand" href="#inicio" aria-label="Índice, início">
+            <span className="brand-icon" aria-hidden="true">↗</span>
+            <span><strong>Índice</strong><small>MERCADO FINANCEIRO</small></span>
           </a>
           <nav className="top-nav" aria-label="Navegação principal">
-            <a className="nav-active" href="#catalogo">Produtos</a>
-            <a href="#vendas">Vendas</a>
-            <a href="#cadastro">Cadastro</a>
-            <a href="#administracao">Administração</a>
+            <a className="nav-active" href="#mercado">Mercado</a>
+            <a href="#catalogo">Ativos</a>
+            <a href="#operacoes">Operações</a>
+            <a href="#administracao">Participantes</a>
           </nav>
-          <span className="topbar-note">{carregando ? 'Conectando ao banco...' : erro ? 'Banco indisponível' : 'Banco conectado'}</span>
+          <span className="topbar-note">{carregando ? 'Sincronizando...' : erro ? 'API indisponível' : 'API conectada'}</span>
         </div>
       </header>
 
-      <div className="page-wrap">
+      <div className="market-strip" id="mercado" aria-label="Indicadores de mercado ilustrativos">
+        <div className="market-strip-inner">
+          <span className="market-label"><i aria-hidden="true" /> MERCADO EM FOCO</span>
+          <span className="market-quote"><strong>IBOV</strong><b>132.480,24</b><em>+0,82%</em></span>
+          <span className="market-quote"><strong>USD/BRL</strong><b>5,42</b><em className="market-down">−0,17%</em></span>
+          <span className="market-quote"><strong>BTC/BRL</strong><b>362.180,50</b><em>+2,41%</em></span>
+          <span className="market-quote"><strong>ETH/BRL</strong><b>19.320,00</b><em>+1,08%</em></span>
+          <span className="market-disclaimer">Indicadores ilustrativos</span>
+        </div>
+      </div>
+
+      <div className="page-wrap" id="inicio">
         <section className="welcome">
           <div>
-            <p className="overline">CONTROLE COMERCIAL</p>
-            <h1>Produtos e vendas</h1>
-            <p>Consulte o estoque, gerencie o catálogo e registre vendas de produtos liberados.</p>
+            <p className="overline">PAINEL DE INVESTIMENTOS <span className="live-indicator">DEMONSTRAÇÃO</span></p>
+            <h1>Mercado em perspectiva</h1>
+            <p>Acompanhe ativos, organize posições e registre suas operações em um só lugar.</p>
           </div>
-          <a className="primary-button" href="#cadastro">＋ Novo produto</a>
+          <a className="primary-button" href="#cadastro">＋ Novo ativo</a>
         </section>
 
-        <section className="stats-grid" aria-label="Resumo do catálogo">
+        <section className="market-disclaimer-banner" aria-label="Aviso sobre os dados">
+          <strong>Ambiente demonstrativo</strong>
+          <span>Cotações e variações são ilustrativas, não representam dados em tempo real nem recomendação de investimento.</span>
+        </section>
+
+        <section className="stats-grid" aria-label="Resumo da carteira">
           <article className="stat-card">
             <span className="stat-icon icon-blue" aria-hidden="true">▦</span>
-            <div><p>Produtos cadastrados</p><strong>{resumo.produtos}</strong></div>
+            <div><p>Ativos acompanhados</p><strong>{resumo.produtos}</strong></div>
           </article>
           <article className="stat-card">
             <span className="stat-icon icon-green" aria-hidden="true">✓</span>
-            <div><p>Unidades em estoque</p><strong>{resumo.unidades}</strong></div>
+            <div><p>Unidades em posição</p><strong>{resumo.unidades}</strong></div>
           </article>
           <article className="stat-card">
             <span className="stat-icon icon-amber" aria-hidden="true">↗</span>
-            <div><p>Vendas registradas</p><strong>{resumo.vendas}</strong></div>
+            <div><p>Operações registradas</p><strong>{resumo.vendas}</strong></div>
           </article>
           <article className="stat-card">
             <span className="stat-icon icon-purple" aria-hidden="true">R$</span>
-            <div><p>Total vendido</p><strong>{formatarMoeda(resumo.totalVendido)}</strong></div>
+            <div><p>Volume movimentado</p><strong>{formatarMoeda(resumo.totalVendido)}</strong></div>
           </article>
         </section>
 
@@ -392,16 +408,16 @@ export default function Home() {
           <div className="main-column">
             <section className="panel" id="catalogo">
               <div className="panel-heading">
-                <div><p className="overline">CATÁLOGO</p><h2>Produtos</h2></div>
-                <span className="record-count">{produtosFiltrados.length} registros</span>
+                <div><p className="overline">UNIVERSO DE INVESTIMENTO</p><h2>Ativos acompanhados</h2></div>
+                <span className="record-count">{produtosFiltrados.length} ativos</span>
               </div>
 
               <div className="catalog-controls">
-                <div className="filter-tabs" role="group" aria-label="Filtrar por tipo">
+                <div className="filter-tabs" role="group" aria-label="Filtrar ativos">
                   {[
                     ['TODOS', 'Todos'],
-                    ['LIVRE', 'Venda livre'],
-                    ['CONTROLADO', 'Controlados'],
+                    ['LIVRE', 'Negociáveis'],
+                    ['CONTROLADO', 'Monitoramento'],
                   ].map(([tipo, rotulo]) => (
                     <button
                       className={filtroTipo === tipo ? 'filter-tab active' : 'filter-tab'}
@@ -416,32 +432,32 @@ export default function Home() {
                 <label className="search-box">
                   <span aria-hidden="true">⌕</span>
                   <input
-                    aria-label="Buscar produto"
+                    aria-label="Buscar ativo"
                     onChange={(evento) => setBusca(evento.target.value)}
-                    placeholder="Buscar produto..."
+                    placeholder="Buscar ativo ou classe..."
                     value={busca}
                   />
                 </label>
               </div>
 
               {carregando ? (
-                <div className="empty-state"><strong>Consultando produtos no banco...</strong></div>
+                <div className="empty-state"><strong>Carregando ativos...</strong></div>
               ) : produtosFiltrados.length === 0 ? (
                 <div className="empty-state">
                   <span aria-hidden="true">▧</span>
-                  <strong>Nenhum produto encontrado</strong>
-                  <p>Cadastre um produto ou ajuste os filtros da busca.</p>
+                  <strong>Nenhum ativo encontrado</strong>
+                  <p>Cadastre um ativo ou ajuste os filtros da busca.</p>
                 </div>
               ) : (
                 <div className="table-scroll">
                   <table>
                     <thead>
                       <tr>
-                        <th>Produto</th>
-                        <th>Categoria</th>
-                        <th>Tipo</th>
-                        <th>Preço</th>
-                        <th>Estoque</th>
+                        <th>Ativo</th>
+                        <th>Classe</th>
+                        <th>Status</th>
+                        <th>Preço unitário</th>
+                        <th>Posição</th>
                         <th><span className="visually-hidden">Ações</span></th>
                       </tr>
                     </thead>
@@ -450,11 +466,11 @@ export default function Home() {
                         <tr key={`${produto.tipo}-${produto.id}`}>
                           <td>
                             <strong className="product-name">{produto.nome}</strong>
-                            <span className="product-description">{produto.descricao || 'Sem descrição'}</span>
+                            <span className="product-description">{produto.descricao || 'Sem observações'}</span>
                           </td>
                           <td className="category-cell">{produto.categoria}</td>
                           <td><span className={`type-badge ${produto.tipo === 'LIVRE' ? 'type-free' : 'type-controlled'}`}>
-                            {produto.tipo === 'LIVRE' ? 'Venda livre' : 'Controlado'}
+                            {produto.tipo === 'LIVRE' ? 'Negociável' : 'Monitoramento'}
                           </span></td>
                           <td className="price-cell">{formatarMoeda(produto.preco)}</td>
                           <td><span className={`stock-value ${produto.estoque < 10 ? 'stock-low' : ''}`}>{produto.estoque}</span></td>
@@ -470,85 +486,85 @@ export default function Home() {
                   </table>
                 </div>
               )}
-              <p className="panel-footnote">Catálogo consultado nas tabelas produtos_LIVRES e produtos_NAO_LIVRES.</p>
+              <p className="panel-footnote">Ativos cadastrados para organização de carteira. Os preços não são cotações em tempo real.</p>
             </section>
 
             <section className="panel" id="cadastro">
               <div className="panel-heading">
-                <div><p className="overline">CATÁLOGO</p><h2>{produtoEmEdicao ? 'Editar produto' : 'Cadastrar produto'}</h2></div>
+                <div><p className="overline">CARTEIRA</p><h2>{produtoEmEdicao ? 'Editar ativo' : 'Cadastrar ativo'}</h2></div>
                 {produtoEmEdicao && <button className="quiet-button" onClick={limparFormulario} type="button">Cancelar edição</button>}
               </div>
               <form className="product-form" onSubmit={salvarProduto}>
                 <label className="form-field">
-                  Nome do produto <span>*</span>
+                  Nome ou ticker <span>*</span>
                   <input maxLength="255" name="nome" onChange={alterarCampo} required value={formulario.nome} disabled={salvando} />
                 </label>
                 <label className="form-field">
-                  Tipo de produto <span>*</span>
+                  Status do ativo <span>*</span>
                   <select name="tipo" onChange={alterarCampo} value={formulario.tipo} disabled={salvando || Boolean(produtoEmEdicao)}>
-                    <option value="LIVRE">Produto livre</option>
-                    <option value="CONTROLADO">Produto controlado</option>
+                    <option value="LIVRE">Negociável</option>
+                    <option value="CONTROLADO">Apenas monitoramento</option>
                   </select>
                 </label>
                 <label className="form-field form-wide">
-                  Categoria <span>*</span>
+                  Classe do ativo <span>*</span>
                   <select name="categoria" onChange={alterarCampo} required value={formulario.categoria} disabled={salvando}>
-                    <option value="">Selecione uma categoria</option>
+                    <option value="">Selecione uma classe</option>
                     {(formulario.tipo === 'LIVRE' ? categoriasLivres : categoriasControladas).map((categoria) => (
                       <option key={categoria} value={categoria}>{categoria}</option>
                     ))}
                   </select>
                 </label>
                 <label className="form-field">
-                  Preço (R$) {formulario.tipo === 'CONTROLADO' && <span>*</span>}
+                  Preço unitário (R$) {formulario.tipo === 'CONTROLADO' && <span>*</span>}
                   <input min="0" name="preco" onChange={alterarCampo} placeholder="0,00" step="0.01" type="number" value={formulario.preco} disabled={salvando} />
                 </label>
                 <label className="form-field">
-                  Estoque <span>*</span>
+                  Unidades em posição <span>*</span>
                   <input min="0" name="estoque" onChange={alterarCampo} required step="1" type="number" value={formulario.estoque} disabled={salvando} />
                 </label>
                 <label className="form-field form-wide">
-                  Descrição
+                  Tese ou observações
                   <textarea maxLength="255" name="descricao" onChange={alterarCampo} rows="2" value={formulario.descricao} disabled={salvando} />
                 </label>
                 {formulario.tipo === 'CONTROLADO' && (
                   <p className="form-guidance form-wide">
-                    Produtos controlados exigem conferência das autorizações aplicáveis. Esta demonstração não registra vendas dessa categoria.
+                    Ativos em monitoramento são exibidos na carteira, mas não podem ser negociados por este painel.
                   </p>
                 )}
                 <div className="form-actions form-wide">
                   <button className="secondary-button" onClick={limparFormulario} type="button" disabled={salvando}>Limpar</button>
-                  <button className="primary-button" type="submit" disabled={salvando}>{salvando ? 'Salvando...' : produtoEmEdicao ? 'Salvar alterações' : 'Cadastrar produto'}</button>
+                  <button className="primary-button" type="submit" disabled={salvando}>{salvando ? 'Salvando...' : produtoEmEdicao ? 'Salvar alterações' : 'Adicionar ativo'}</button>
                 </div>
               </form>
             </section>
           </div>
 
           <aside className="side-column">
-            <section className="panel" id="vendas">
+            <section className="panel" id="operacoes">
               <div className="panel-heading">
-                <div><p className="overline">OPERAÇÃO</p><h2>Registrar venda</h2></div>
+                <div><p className="overline">ORDEM MANUAL</p><h2>Registrar venda</h2></div>
                 <span className="sale-icon" aria-hidden="true">↗</span>
               </div>
-              <p className="helper-copy">Registre a saída de produtos livres e atualize o estoque.</p>
+              <p className="helper-copy">Registre uma venda simulada e acompanhe a redução da posição.</p>
               <form className="sale-form" onSubmit={registrarVenda}>
                 <label className="form-field">
-                  Produto
+                  Ativo
                   <select onChange={(evento) => setProdutoDaVenda(evento.target.value)} value={produtoDaVenda} disabled={registrandoVenda}>
-                    <option value="">Selecione um produto</option>
+                    <option value="">Selecione um ativo</option>
                     {produtosParaVenda.map((produto) => (
                       <option key={produto.id} value={produto.id}>{produto.nome} — {formatarMoeda(produto.preco)}</option>
                     ))}
                   </select>
                 </label>
                 <label className="form-field">
-                  Quantidade
+                  Quantidade de unidades
                   <input min="1" onChange={(evento) => setQuantidadeVenda(evento.target.value)} step="1" type="number" value={quantidadeVenda} disabled={registrandoVenda} />
                 </label>
                 <label className="form-field">
-                  Empresa (opcional)
+                  Corretora ou organização (opcional)
                   <select onChange={(evento) => setEmpresaDaVenda(evento.target.value)} value={empresaDaVenda} disabled={registrandoVenda}>
-                    <option value="">Venda sem empresa vinculada</option>
+                    <option value="">Sem organização vinculada</option>
                     {empresas.map((empresa) => (
                       <option key={empresa.id} value={empresa.id}>{empresa.nome}</option>
                     ))}
@@ -558,22 +574,22 @@ export default function Home() {
                   {registrandoVenda ? 'Registrando...' : 'Registrar venda'}
                 </button>
               </form>
-              <p className="form-guidance">A venda é gravada no banco e o estoque é abatido em uma única transação. Esta tela registra somente vendas de produtos livres.</p>
+              <p className="form-guidance">A venda é registrada no banco e reduz as unidades disponíveis. Este painel demonstrativo não envia ordens para corretoras.</p>
             </section>
 
             <section className="panel sales-panel">
               <div className="panel-heading">
-                <div><p className="overline">MOVIMENTAÇÃO</p><h2>Vendas recentes</h2></div>
+                <div><p className="overline">HISTÓRICO</p><h2>Operações recentes</h2></div>
                 <span className="record-count">{vendas.length}</span>
               </div>
               {vendas.length === 0 ? (
-                <p className="sales-empty">As vendas feitas nesta sessão aparecerão aqui.</p>
+                <p className="sales-empty">As operações registradas aparecerão aqui.</p>
               ) : (
                 <ul className="sales-list">
                   {vendas.slice(0, 5).map((venda) => (
                     <li key={venda.id}>
                       <span className="sale-dot" aria-hidden="true">✓</span>
-                      <span className="sale-description"><strong>{venda.produto}</strong><small>{venda.quantidade} un. · {venda.data}{venda.empresa ? ` · ${venda.empresa}` : ''}</small></span>
+                          <span className="sale-description"><strong>{venda.produto}</strong><small>{venda.quantidade} un. · {venda.data}{venda.empresa ? ` · ${venda.empresa}` : ''}</small></span>
                       <strong className="sale-total">{formatarMoeda(venda.quantidade * venda.preco)}</strong>
                     </li>
                   ))}
@@ -585,14 +601,14 @@ export default function Home() {
 
         <section className="panel admin-panel" id="administracao">
           <div className="panel-heading">
-            <div><p className="overline">ADMINISTRAÇÃO</p><h2>Empresas e usuários</h2></div>
-            <span className="record-count">{empresas.length} empresas · {usuarios.length} usuários</span>
+            <div><p className="overline">ACESSO E PARTICIPANTES</p><h2>Organizações e investidores</h2></div>
+            <span className="record-count">{empresas.length} organizações · {usuarios.length} investidores</span>
           </div>
 
           <div className="admin-grid">
             <section className="admin-section">
               <div className="admin-section-heading">
-                <h3>{empresaEmEdicao ? 'Editar empresa' : 'Cadastrar empresa'}</h3>
+                <h3>{empresaEmEdicao ? 'Editar organização' : 'Cadastrar organização'}</h3>
                 {empresaEmEdicao && (
                   <button
                     className="quiet-button"
@@ -607,24 +623,24 @@ export default function Home() {
                 )}
               </div>
               <form className="admin-form" onSubmit={salvarEmpresa}>
-                <label className="form-field">Nome da empresa <span>*</span>
+                <label className="form-field">Nome da organização <span>*</span>
                   <input maxLength="255" onChange={(evento) => setFormularioEmpresa({ ...formularioEmpresa, nome: evento.target.value })} required value={formularioEmpresa.nome} />
                 </label>
-                <label className="form-field">E-mail do representante <span>*</span>
+                <label className="form-field">E-mail de contato <span>*</span>
                   <input onChange={(evento) => setFormularioEmpresa({ ...formularioEmpresa, email_rep: evento.target.value })} required type="email" value={formularioEmpresa.email_rep} />
                 </label>
                 <label className="form-field">CNPJ <span>*</span>
                   <input maxLength="18" onChange={(evento) => setFormularioEmpresa({ ...formularioEmpresa, CNPJ: evento.target.value })} placeholder="Somente 14 dígitos" required value={formularioEmpresa.CNPJ} />
                 </label>
-                <label className="form-field">Descrição <span>*</span>
+                <label className="form-field">Perfil da organização <span>*</span>
                   <input maxLength="255" onChange={(evento) => setFormularioEmpresa({ ...formularioEmpresa, descricao: evento.target.value })} required value={formularioEmpresa.descricao} />
                 </label>
                 <button className="primary-button admin-submit" disabled={salvandoCadastro} type="submit">
-                  {salvandoCadastro ? 'Salvando...' : empresaEmEdicao ? 'Salvar empresa' : 'Cadastrar empresa'}
+                  {salvandoCadastro ? 'Salvando...' : empresaEmEdicao ? 'Salvar organização' : 'Cadastrar organização'}
                 </button>
               </form>
               <div className="admin-records">
-                {empresas.length === 0 ? <p className="admin-empty">Nenhuma empresa cadastrada.</p> : empresas.map((empresa) => (
+                {empresas.length === 0 ? <p className="admin-empty">Nenhuma organização cadastrada.</p> : empresas.map((empresa) => (
                   <article className="admin-record" key={empresa.id}>
                     <div><strong>{empresa.nome}</strong><small>{empresa.CNPJ} · {empresa.email_rep}</small></div>
                     <div className="table-actions">
@@ -641,7 +657,7 @@ export default function Home() {
 
             <section className="admin-section">
               <div className="admin-section-heading">
-                <h3>{usuarioEmEdicao ? 'Editar usuário' : 'Cadastrar usuário'}</h3>
+                <h3>{usuarioEmEdicao ? 'Editar investidor' : 'Cadastrar investidor'}</h3>
                 {usuarioEmEdicao && (
                   <button
                     className="quiet-button"
@@ -656,7 +672,7 @@ export default function Home() {
                 )}
               </div>
               <form className="admin-form" onSubmit={salvarUsuario}>
-                <label className="form-field">Nome <span>*</span>
+                <label className="form-field">Nome do investidor <span>*</span>
                   <input maxLength="255" onChange={(evento) => setFormularioUsuario({ ...formularioUsuario, nome: evento.target.value })} required value={formularioUsuario.nome} />
                 </label>
                 <label className="form-field">E-mail <span>*</span>
@@ -678,7 +694,7 @@ export default function Home() {
                 </button>
               </form>
               <div className="admin-records">
-                {usuarios.length === 0 ? <p className="admin-empty">Nenhum usuário cadastrado.</p> : usuarios.map((usuario) => (
+                {usuarios.length === 0 ? <p className="admin-empty">Nenhum investidor cadastrado.</p> : usuarios.map((usuario) => (
                   <article className="admin-record" key={usuario.id}>
                     <div><strong>{usuario.nome}</strong><small>{usuario.email} · CPF {usuario.CPF}</small></div>
                     <div className="table-actions">
@@ -696,7 +712,7 @@ export default function Home() {
         </section>
 
         <footer className="page-footer">
-          Química Comercial <span>·</span> Produtos, estoque e vendas conectados ao MySQL.
+          Índice <span>·</span> Acompanhamento demonstrativo de ações, criptoativos e mercado financeiro.
         </footer>
       </div>
     </main>

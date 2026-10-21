@@ -1,8 +1,8 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Química Comercial | Produtos e vendas",
-  description: "Demonstração de cadastro, estoque e vendas de produtos.",
+  title: "Índice | Mercado financeiro",
+  description: "Painel demonstrativo para acompanhar ativos, posições e operações financeiras.",
 };
 
 export default function RootLayout({ children }) {
