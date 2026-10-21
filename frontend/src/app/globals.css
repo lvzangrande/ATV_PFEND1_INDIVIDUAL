@@ -63,6 +63,11 @@ a {
   text-decoration: none;
 }
 
+:focus-visible {
+  outline: 3px solid #c89f3d;
+  outline-offset: 3px;
+}
+
 .topbar {
   height: 68px;
   border-bottom: 1px solid #e7ebee;
@@ -974,6 +979,7 @@ tbody tr:last-child td {
   gap: 8px;
   color: #e4e9df;
   font-size: 10px;
+  cursor: default;
 }
 
 .profile-avatar {

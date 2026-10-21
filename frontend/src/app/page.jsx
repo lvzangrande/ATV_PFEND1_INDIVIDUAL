@@ -356,10 +356,10 @@ export default function Home() {
               <i className={apiIndisponivel ? 'connection-dot connection-error' : 'connection-dot'} aria-hidden="true" />
               {carregando ? 'Sincronizando' : apiIndisponivel ? 'API indisponível' : 'Conectado'}
             </span>
-            <a className="profile-link" href="#administracao" aria-label="Acessar investidores">
+            <span className="profile-link" aria-label="Modo demonstração">
               <span className="profile-avatar" aria-hidden="true">D</span>
               <span>Modo demonstração</span>
-            </a>
+            </span>
           </div>
         </div>
       </header>
