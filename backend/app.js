@@ -134,13 +134,13 @@ export function criarApp({ pool = criarPool() } = {}) {
   });
 
   app.get('/api/dashboard', async (_req, res) => {
-    const [produtos] = await pool.query(`
-      SELECT COUNT(*) AS produtos, COALESCE(SUM(estoque), 0) AS unidades
+    const [ativos] = await pool.query(`
+      SELECT COUNT(*) AS quantidade, COALESCE(SUM(posicao), 0) AS unidades
       FROM (
-        SELECT estoque FROM produtos_LIVRES
+        SELECT posicao FROM ativos_negociaveis
         UNION ALL
-        SELECT estoque FROM produtos_NAO_LIVRES
-      ) AS estoque_total
+        SELECT posicao FROM ativos_monitorados
+      ) AS posicoes
     `);
     const [vendas] = await pool.query(`
       SELECT COUNT(*) AS quantidade, COALESCE(SUM(quantidade * preco_unitario), 0) AS total
@@ -149,8 +149,8 @@ export function criarApp({ pool = criarPool() } = {}) {
     const [empresas] = await pool.query('SELECT COUNT(*) AS quantidade FROM empresas');
     const [usuarios] = await pool.query('SELECT COUNT(*) AS quantidade FROM usuarios');
     res.status(200).json({
-      produtos: Number(produtos[0].produtos),
-      unidades: Number(produtos[0].unidades),
+      produtos: Number(ativos[0].quantidade),
+      unidades: Number(ativos[0].unidades),
       vendas: Number(vendas[0].quantidade),
       totalVendido: Number(vendas[0].total),
       empresas: Number(empresas[0].quantidade),
@@ -158,96 +158,96 @@ export function criarApp({ pool = criarPool() } = {}) {
     });
   });
 
-  app.get('/api/produtos', async (_req, res) => {
-    res.status(200).json(await listarProdutos());
+  app.get('/api/ativos', async (_req, res) => {
+    res.status(200).json(await listarAtivos());
   });
 
-  app.get('/api/produtos/:tipo/:id', async (req, res) => {
-    const { tipo } = req.params;
+  app.get('/api/ativos/:status/:id', async (req, res) => {
+    const { status } = req.params;
     const id = Number(req.params.id);
-    if (!Object.hasOwn(categorias, tipo) || !Number.isSafeInteger(id) || id < 1 || id > 2147483647) {
-      return res.status(400).json({ erro: 'Tipo ou identificador de produto inválido.' });
+    if (!Object.hasOwn(categorias, status) || !Number.isSafeInteger(id) || id < 1 || id > 2147483647) {
+      return res.status(400).json({ erro: 'Status ou identificador de ativo inválido.' });
     }
     const [linhas] = await pool.execute(
-      `SELECT ID AS id, nome, categoria, preco, descricao, estoque FROM ${tabelaDoTipo(tipo)} WHERE ID = ?`,
+      `SELECT ID AS id, nome, categoria, preco, descricao, posicao FROM ${tabelaDoStatus(status)} WHERE ID = ?`,
       [id],
     );
-    if (linhas.length === 0) return res.status(404).json({ erro: 'Produto não encontrado.' });
+    if (linhas.length === 0) return res.status(404).json({ erro: 'Ativo não encontrado.' });
     return res.status(200).json({
       ...linhas[0],
       id: Number(linhas[0].id),
       preco: linhas[0].preco === null ? null : Number(linhas[0].preco),
-      estoque: Number(linhas[0].estoque),
-      tipo,
+      posicao: Number(linhas[0].posicao),
+      status,
     });
   });
 
-  app.post('/api/produtos', async (req, res) => {
+  app.post('/api/ativos', async (req, res) => {
     const dados = req.body || {};
-    const erros = validarProduto(dados);
+    const erros = validarAtivo(dados);
     if (Object.keys(erros).length > 0) {
-      return res.status(400).json({ erro: 'Verifique os dados do produto.', campos: erros });
+      return res.status(400).json({ erro: 'Verifique os dados do ativo.', campos: erros });
     }
-    const tabela = tabelaDoTipo(dados.tipo);
+    const tabela = tabelaDoStatus(dados.status);
     const [resultado] = await pool.execute(
-      `INSERT INTO ${tabela} (nome, categoria, preco, descricao, estoque) VALUES (?, ?, ?, ?, ?)`,
-      [dados.nome.trim(), dados.categoria, dados.preco ?? null, dados.descricao, dados.estoque],
+      `INSERT INTO ${tabela} (nome, categoria, preco, descricao, posicao) VALUES (?, ?, ?, ?, ?)`,
+      [dados.nome.trim(), dados.categoria, dados.preco ?? null, dados.descricao, dados.posicao],
     );
     const [linhas] = await pool.execute(
-      `SELECT ID AS id, nome, categoria, preco, descricao, estoque FROM ${tabela} WHERE ID = ?`,
+      `SELECT ID AS id, nome, categoria, preco, descricao, posicao FROM ${tabela} WHERE ID = ?`,
       [resultado.insertId],
     );
     return res.status(201).json({
       ...linhas[0],
       id: Number(linhas[0].id),
       preco: linhas[0].preco === null ? null : Number(linhas[0].preco),
-      estoque: Number(linhas[0].estoque),
-      tipo: dados.tipo,
+      posicao: Number(linhas[0].posicao),
+      status: dados.status,
     });
   });
 
-  app.put('/api/produtos/:tipo/:id', async (req, res) => {
-    const { tipo } = req.params;
+  app.put('/api/ativos/:status/:id', async (req, res) => {
+    const { status } = req.params;
     const id = Number(req.params.id);
-    if (!Object.hasOwn(categorias, tipo) || !Number.isSafeInteger(id) || id < 1 || id > 2147483647) {
-      return res.status(400).json({ erro: 'Tipo ou identificador de produto inválido.' });
+    if (!Object.hasOwn(categorias, status) || !Number.isSafeInteger(id) || id < 1 || id > 2147483647) {
+      return res.status(400).json({ erro: 'Status ou identificador de ativo inválido.' });
     }
     const dados = req.body || {};
-    const erros = validarProduto({ ...dados, tipo });
+    const erros = validarAtivo({ ...dados, status });
     if (Object.keys(erros).length > 0) {
-      return res.status(400).json({ erro: 'Verifique os dados do produto.', campos: erros });
+      return res.status(400).json({ erro: 'Verifique os dados do ativo.', campos: erros });
     }
-    const tabela = tabelaDoTipo(tipo);
+    const tabela = tabelaDoStatus(status);
     const [resultado] = await pool.execute(
-      `UPDATE ${tabela} SET nome = ?, categoria = ?, preco = ?, descricao = ?, estoque = ? WHERE ID = ?`,
-      [dados.nome.trim(), dados.categoria, dados.preco ?? null, dados.descricao, dados.estoque, id],
+      `UPDATE ${tabela} SET nome = ?, categoria = ?, preco = ?, descricao = ?, posicao = ? WHERE ID = ?`,
+      [dados.nome.trim(), dados.categoria, dados.preco ?? null, dados.descricao, dados.posicao, id],
     );
     if (resultado.affectedRows === 0) {
       const [existente] = await pool.execute(`SELECT ID FROM ${tabela} WHERE ID = ?`, [id]);
-      if (existente.length === 0) return res.status(404).json({ erro: 'Produto não encontrado.' });
+      if (existente.length === 0) return res.status(404).json({ erro: 'Ativo não encontrado.' });
     }
     const [linhas] = await pool.execute(
-      `SELECT ID AS id, nome, categoria, preco, descricao, estoque FROM ${tabela} WHERE ID = ?`,
+      `SELECT ID AS id, nome, categoria, preco, descricao, posicao FROM ${tabela} WHERE ID = ?`,
       [id],
     );
     return res.status(200).json({
       ...linhas[0],
       id: Number(linhas[0].id),
       preco: linhas[0].preco === null ? null : Number(linhas[0].preco),
-      estoque: Number(linhas[0].estoque),
-      tipo,
+      posicao: Number(linhas[0].posicao),
+      status,
     });
   });
 
-  app.delete('/api/produtos/:tipo/:id', async (req, res) => {
-    const { tipo } = req.params;
+  app.delete('/api/ativos/:status/:id', async (req, res) => {
+    const { status } = req.params;
     const id = Number(req.params.id);
-    if (!Object.hasOwn(categorias, tipo) || !Number.isSafeInteger(id) || id < 1 || id > 2147483647) {
-      return res.status(400).json({ erro: 'Tipo ou identificador de produto inválido.' });
+    if (!Object.hasOwn(categorias, status) || !Number.isSafeInteger(id) || id < 1 || id > 2147483647) {
+      return res.status(400).json({ erro: 'Status ou identificador de ativo inválido.' });
     }
-    const [resultado] = await pool.execute(`DELETE FROM ${tabelaDoTipo(tipo)} WHERE ID = ?`, [id]);
-    if (resultado.affectedRows === 0) return res.status(404).json({ erro: 'Produto não encontrado.' });
-    return res.status(200).json({ mensagem: 'Produto excluído com sucesso.' });
+    const [resultado] = await pool.execute(`DELETE FROM ${tabelaDoStatus(status)} WHERE ID = ?`, [id]);
+    if (resultado.affectedRows === 0) return res.status(404).json({ erro: 'Ativo não encontrado.' });
+    return res.status(200).json({ mensagem: 'Ativo removido com sucesso.' });
   });
 
   app.get('/api/empresas', async (_req, res) => {
@@ -403,11 +403,11 @@ export function criarApp({ pool = criarPool() } = {}) {
 
   app.get('/api/vendas', async (_req, res) => {
     const [linhas] = await pool.query(`
-      SELECT v.ID AS id, v.codigo_venda AS codigo, p.nome AS produto,
+      SELECT v.ID AS id, v.codigo_venda AS codigo, a.nome AS ativo,
         v.quantidade, v.preco_unitario AS preco, v.data_venda AS data,
         v.empresa_ID AS empresaId, e.nome AS empresa
       FROM vendas AS v
-      INNER JOIN produtos_LIVRES AS p ON p.ID = v.produto_ID
+      INNER JOIN ativos_negociaveis AS a ON a.ID = v.ativo_ID
       LEFT JOIN empresas AS e ON e.ID = v.empresa_ID
       ORDER BY v.data_venda DESC, v.ID DESC
       LIMIT 20
@@ -423,31 +423,31 @@ export function criarApp({ pool = criarPool() } = {}) {
   });
 
   app.post('/api/vendas', async (req, res) => {
-    const produtoId = Number(req.body?.produtoId);
+    const ativoId = Number(req.body?.ativoId);
     const quantidade = req.body?.quantidade;
     const empresaId = req.body?.empresaId === null || req.body?.empresaId === undefined || req.body.empresaId === ''
       ? null
       : Number(req.body.empresaId);
-    if (req.body?.tipo !== 'LIVRE'
-      || !Number.isSafeInteger(produtoId) || produtoId < 1
-      || produtoId > 2147483647
+    if (req.body?.status !== 'NEGOCIAVEL'
+      || !Number.isSafeInteger(ativoId) || ativoId < 1
+      || ativoId > 2147483647
       || !Number.isSafeInteger(quantidade) || quantidade < 1 || quantidade > 2147483647
       || (empresaId !== null && (!Number.isSafeInteger(empresaId) || empresaId < 1 || empresaId > 2147483647))) {
-      return res.status(400).json({ erro: 'Selecione um produto de venda livre e uma quantidade inteira maior que zero.' });
+      return res.status(400).json({ erro: 'Selecione um ativo negociável e uma quantidade inteira maior que zero.' });
     }
 
     const conexao = await pool.getConnection();
     try {
       await conexao.beginTransaction();
-      const [produtos] = await conexao.execute(
-        'SELECT ID AS id, nome, preco, estoque FROM produtos_LIVRES WHERE ID = ? FOR UPDATE',
-        [produtoId],
+      const [ativos] = await conexao.execute(
+        'SELECT ID AS id, nome, preco, posicao FROM ativos_negociaveis WHERE ID = ? FOR UPDATE',
+        [ativoId],
       );
-      if (produtos.length === 0) {
+      if (ativos.length === 0) {
         await conexao.rollback();
-        return res.status(404).json({ erro: 'Produto de venda livre não encontrado.' });
+        return res.status(404).json({ erro: 'Ativo negociável não encontrado.' });
       }
-      const produto = produtos[0];
+      const ativo = ativos[0];
       let empresa = null;
       if (empresaId !== null) {
         const [empresas] = await conexao.execute('SELECT ID, nome FROM empresas WHERE ID = ? FOR UPDATE', [empresaId]);
@@ -457,34 +457,34 @@ export function criarApp({ pool = criarPool() } = {}) {
         }
         empresa = empresas[0];
       }
-      if (produto.preco === null) {
+      if (ativo.preco === null) {
         await conexao.rollback();
-        return res.status(400).json({ erro: 'Defina o preço do produto antes de registrar a venda.' });
+        return res.status(400).json({ erro: 'Defina o preço do ativo antes de registrar a venda.' });
       }
-      if (Number(produto.estoque) < quantidade) {
+      if (Number(ativo.posicao) < quantidade) {
         await conexao.rollback();
-        return res.status(409).json({ erro: `Estoque insuficiente. Disponível: ${produto.estoque}.` });
+        return res.status(409).json({ erro: `Posição insuficiente. Disponível: ${ativo.posicao}.` });
       }
 
       const codigo = `V-${randomUUID()}`;
       const [venda] = await conexao.execute(
-        'INSERT INTO vendas (codigo_venda, produto_ID, empresa_ID, quantidade, preco_unitario) VALUES (?, ?, ?, ?, ?)',
-        [codigo, produtoId, empresaId, quantidade, produto.preco],
+        'INSERT INTO vendas (codigo_venda, ativo_ID, empresa_ID, quantidade, preco_unitario) VALUES (?, ?, ?, ?, ?)',
+        [codigo, ativoId, empresaId, quantidade, ativo.preco],
       );
       await conexao.execute(
-        'UPDATE produtos_LIVRES SET estoque = estoque - ? WHERE ID = ?',
-        [quantidade, produtoId],
+        'UPDATE ativos_negociaveis SET posicao = posicao - ? WHERE ID = ?',
+        [quantidade, ativoId],
       );
       await conexao.commit();
       return res.status(201).json({
         id: Number(venda.insertId),
         codigo,
-        produto: produto.nome,
+        ativo: ativo.nome,
         quantidade,
         empresa: empresa?.nome || null,
-        preco: Number(produto.preco),
-        total: Number(produto.preco) * quantidade,
-        mensagem: 'Venda registrada e estoque atualizado.',
+        preco: Number(ativo.preco),
+        total: Number(ativo.preco) * quantidade,
+        mensagem: 'Venda registrada e posição atualizada.',
       });
     } catch (erro) {
       await conexao.rollback();
@@ -508,7 +508,7 @@ export function criarApp({ pool = criarPool() } = {}) {
     if (erro.code === 'ER_ROW_IS_REFERENCED_2') {
       return res.status(409).json({ erro: 'Este registro possui vendas vinculadas e não pode ser excluído.' });
     }
-    console.error('Erro na API de produtos:', erro);
+    console.error('Erro na API da carteira:', erro);
     return res.status(500).json({ erro: 'Falha ao acessar o banco de dados. Verifique a conexão e as migrações.' });
   });
 
