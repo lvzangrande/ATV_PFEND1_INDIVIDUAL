@@ -15,7 +15,7 @@ import {
   removerUsuario,
 } from '@/services/api';
 
-const categoriasLivres = [
+const categoriasNegociaveis = [
   'Ações brasileiras',
   'Ações internacionais e BDRs',
   'Fundos imobiliários (FIIs)',
@@ -28,7 +28,7 @@ const categoriasLivres = [
   'Fundos de investimento',
 ];
 
-const categoriasControladas = [
+const categoriasMonitoradas = [
   'Opções',
   'Contratos futuros',
   'Derivativos',
@@ -43,11 +43,11 @@ const categoriasControladas = [
 
 const formularioInicial = {
   nome: '',
-  tipo: 'LIVRE',
+  status: 'NEGOCIAVEL',
   categoria: '',
   preco: '',
   descricao: '',
-  estoque: '',
+  posicao: '',
 };
 
 function formatarMoeda(valor) {
@@ -92,7 +92,7 @@ export default function Home() {
   }, [busca, filtroTipo, produtos]);
 
   const produtosParaVenda = produtos.filter(
-    (produto) => produto.tipo === 'LIVRE' && produto.estoque > 0 && produto.preco !== null,
+    (produto) => produto.status === 'NEGOCIAVEL' && produto.posicao > 0 && produto.preco !== null,
   );
   async function atualizarPainel() {
     setAtualizando(true);
@@ -123,7 +123,7 @@ export default function Home() {
     setFormulario((atual) => ({
       ...atual,
       [name]: value,
-      ...(name === 'tipo' ? { categoria: '' } : {}),
+      ...(name === 'status' ? { categoria: '' } : {}),
     }));
     setErro('');
     setAviso('');
@@ -136,9 +136,9 @@ export default function Home() {
 
   async function salvarProduto(evento) {
     evento.preventDefault();
-    const categoriaValida = formulario.tipo === 'LIVRE' ? categoriasLivres : categoriasControladas;
+    const categoriaValida = formulario.status === 'NEGOCIAVEL' ? categoriasNegociaveis : categoriasMonitoradas;
     const preco = formulario.preco === '' ? null : Number(formulario.preco);
-    const estoque = Number(formulario.estoque);
+    const posicao = Number(formulario.posicao);
 
     if (!formulario.nome.trim()) {
       setErro('Informe o nome do ativo.');
@@ -148,12 +148,8 @@ export default function Home() {
       setErro('Selecione uma classe de ativo válida.');
       return;
     }
-    if (!Number.isSafeInteger(estoque) || estoque < 0) {
+    if (!Number.isSafeInteger(posicao) || posicao < 0) {
       setErro('A posição deve ser um número inteiro igual ou maior que zero.');
-      return;
-    }
-    if (formulario.tipo === 'CONTROLADO' && (preco === null || !Number.isFinite(preco) || preco < 0)) {
-      setErro('Informe um preço válido para este ativo.');
       return;
     }
     if (preco !== null && (!Number.isFinite(preco) || preco < 0)) {
@@ -163,11 +159,11 @@ export default function Home() {
 
     const dados = {
       nome: formulario.nome.trim(),
-      tipo: formulario.tipo,
+      status: formulario.status,
       categoria: formulario.categoria,
       preco,
       descricao: formulario.descricao.trim(),
-      estoque,
+      posicao,
     };
 
     setSalvando(true);
@@ -175,7 +171,7 @@ export default function Home() {
     setAviso('');
     try {
       if (produtoEmEdicao) {
-        await atualizarProduto({ ...dados, id: produtoEmEdicao.id, tipo: produtoEmEdicao.tipo });
+        await atualizarProduto({ ...dados, id: produtoEmEdicao.id, status: produtoEmEdicao.status });
         setAviso('Ativo atualizado na sua carteira.');
       } else {
         await criarProduto(dados);
@@ -194,11 +190,11 @@ export default function Home() {
     setProdutoEmEdicao(produto);
     setFormulario({
       nome: produto.nome,
-      tipo: produto.tipo,
+      status: produto.status,
       categoria: produto.categoria,
       preco: produto.preco === null ? '' : String(produto.preco),
       descricao: produto.descricao,
-      estoque: String(produto.estoque),
+      posicao: String(produto.posicao),
     });
     setErro('');
     setAviso('');
@@ -211,7 +207,7 @@ export default function Home() {
     setAviso('');
     try {
       await removerProduto(produto);
-      if (produtoEmEdicao?.id === produto.id && produtoEmEdicao.tipo === produto.tipo) limparFormulario();
+      if (produtoEmEdicao?.id === produto.id && produtoEmEdicao.status === produto.status) limparFormulario();
       setAviso('Ativo removido da sua carteira.');
       await atualizarPainel();
     } catch (falha) {
@@ -221,10 +217,10 @@ export default function Home() {
 
   async function registrarVenda(evento) {
     evento.preventDefault();
-    const produto = produtos.find((item) => item.tipo === 'LIVRE' && item.id === Number(produtoDaVenda));
+    const produto = produtos.find((item) => item.status === 'NEGOCIAVEL' && item.id === Number(produtoDaVenda));
     const quantidade = Number(quantidadeVenda);
 
-    if (!produto || produto.tipo !== 'LIVRE' || produto.preco === null) {
+    if (!produto || produto.status !== 'NEGOCIAVEL' || produto.preco === null) {
       setErro('Selecione um ativo negociável com preço definido.');
       return;
     }
@@ -232,8 +228,8 @@ export default function Home() {
       setErro('Informe uma quantidade inteira maior que zero.');
       return;
     }
-    if (quantidade > produto.estoque) {
-      setErro(`Posição insuficiente. Unidades disponíveis: ${produto.estoque}.`);
+    if (quantidade > produto.posicao) {
+      setErro(`Posição insuficiente. Unidades disponíveis: ${produto.posicao}.`);
       return;
     }
 
@@ -242,7 +238,7 @@ export default function Home() {
     try {
       await criarVenda(
         produto.id,
-        produto.tipo,
+        produto.status,
         quantidade,
         empresaDaVenda ? Number(empresaDaVenda) : null,
       );
@@ -435,8 +431,8 @@ export default function Home() {
                 <div className="filter-tabs" role="group" aria-label="Filtrar ativos">
                   {[
                     ['TODOS', 'Todos'],
-                    ['LIVRE', 'Negociáveis'],
-                    ['CONTROLADO', 'Monitoramento'],
+                    ['NEGOCIAVEL', 'Negociáveis'],
+                    ['MONITORADO', 'Monitoramento'],
                   ].map(([tipo, rotulo]) => (
                     <button
                       className={filtroTipo === tipo ? 'filter-tab active' : 'filter-tab'}
@@ -488,11 +484,11 @@ export default function Home() {
                             <span className="product-description">{produto.descricao || 'Sem observações'}</span>
                           </td>
                           <td className="category-cell">{produto.categoria}</td>
-                          <td><span className={`type-badge ${produto.tipo === 'LIVRE' ? 'type-free' : 'type-controlled'}`}>
-                            {produto.tipo === 'LIVRE' ? 'Negociável' : 'Monitoramento'}
+                          <td><span className={`type-badge ${produto.status === 'NEGOCIAVEL' ? 'type-free' : 'type-controlled'}`}>
+                            {produto.status === 'NEGOCIAVEL' ? 'Negociável' : 'Monitoramento'}
                           </span></td>
                           <td className="price-cell">{formatarMoeda(produto.preco)}</td>
-                          <td><span className={`stock-value ${produto.estoque < 10 ? 'stock-low' : ''}`}>{produto.estoque}</span></td>
+                          <td><span className={`stock-value ${produto.posicao < 10 ? 'stock-low' : ''}`}>{produto.posicao}</span></td>
                           <td>
                             <div className="table-actions">
                               <button aria-label={`Editar ${produto.nome}`} className="icon-button" onClick={() => editarProduto(produto)} title="Editar" type="button">✎</button>
@@ -520,33 +516,33 @@ export default function Home() {
                 </label>
                 <label className="form-field">
                   Status do ativo <span>*</span>
-                  <select name="tipo" onChange={alterarCampo} value={formulario.tipo} disabled={salvando || Boolean(produtoEmEdicao)}>
-                    <option value="LIVRE">Negociável</option>
-                    <option value="CONTROLADO">Apenas monitoramento</option>
+                  <select name="status" onChange={alterarCampo} value={formulario.status} disabled={salvando || Boolean(produtoEmEdicao)}>
+                    <option value="NEGOCIAVEL">Negociável</option>
+                    <option value="MONITORADO">Apenas monitoramento</option>
                   </select>
                 </label>
                 <label className="form-field form-wide">
                   Classe do ativo <span>*</span>
                   <select name="categoria" onChange={alterarCampo} required value={formulario.categoria} disabled={salvando}>
                     <option value="">Selecione uma classe</option>
-                    {(formulario.tipo === 'LIVRE' ? categoriasLivres : categoriasControladas).map((categoria) => (
+                    {(formulario.status === 'NEGOCIAVEL' ? categoriasNegociaveis : categoriasMonitoradas).map((categoria) => (
                       <option key={categoria} value={categoria}>{categoria}</option>
                     ))}
                   </select>
                 </label>
                 <label className="form-field">
-                  Preço unitário (R$) {formulario.tipo === 'CONTROLADO' && <span>*</span>}
+                  Preço unitário (R$)
                   <input min="0" name="preco" onChange={alterarCampo} placeholder="0,00" step="0.01" type="number" value={formulario.preco} disabled={salvando} />
                 </label>
                 <label className="form-field">
                   Unidades em posição <span>*</span>
-                  <input min="0" name="estoque" onChange={alterarCampo} required step="1" type="number" value={formulario.estoque} disabled={salvando} />
+                  <input min="0" name="posicao" onChange={alterarCampo} required step="1" type="number" value={formulario.posicao} disabled={salvando} />
                 </label>
                 <label className="form-field form-wide">
                   Tese ou observações
                   <textarea maxLength="255" name="descricao" onChange={alterarCampo} rows="2" value={formulario.descricao} disabled={salvando} />
                 </label>
-                {formulario.tipo === 'CONTROLADO' && (
+                {formulario.status === 'MONITORADO' && (
                   <p className="form-guidance form-wide">
                     Ativos em monitoramento são exibidos na carteira, mas não podem ser negociados por este painel.
                   </p>

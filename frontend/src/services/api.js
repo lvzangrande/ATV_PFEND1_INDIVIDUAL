@@ -36,7 +36,7 @@ function enviar(method, dados) {
 
 export function carregarPainel() {
   return Promise.all([
-    requisitar('/api/produtos'),
+    requisitar('/api/ativos'),
     requisitar('/api/vendas'),
     requisitar('/api/dashboard'),
     requisitar('/api/empresas'),
@@ -45,15 +45,15 @@ export function carregarPainel() {
 }
 
 export function criarProduto(produto) {
-  return requisitar('/api/produtos', enviar('POST', produto));
+  return requisitar('/api/ativos', enviar('POST', produto));
 }
 
 export function atualizarProduto(produto) {
-  return requisitar(`/api/produtos/${produto.tipo}/${produto.id}`, enviar('PUT', produto));
+  return requisitar(`/api/ativos/${produto.status}/${produto.id}`, enviar('PUT', produto));
 }
 
 export function removerProduto(produto) {
-  return requisitar(`/api/produtos/${produto.tipo}/${produto.id}`, { method: 'DELETE' });
+  return requisitar(`/api/ativos/${produto.status}/${produto.id}`, { method: 'DELETE' });
 }
 
 export function criarEmpresa(empresa) {
@@ -80,6 +80,6 @@ export function removerUsuario(id) {
   return requisitar(`/api/usuarios/${id}`, { method: 'DELETE' });
 }
 
-export function criarVenda(produtoId, tipo, quantidade, empresaId) {
-  return requisitar('/api/vendas', enviar('POST', { produtoId, tipo, quantidade, empresaId }));
+export function criarVenda(ativoId, status, quantidade, empresaId) {
+  return requisitar('/api/vendas', enviar('POST', { ativoId, status, quantidade, empresaId }));
 }
