@@ -1,9 +1,16 @@
-import { carregarAmbiente } from './config/ambiente.js';
+import { app } from './app.js';
+import { pool } from './config/database.js';
 
-const config = carregarAmbiente('.env');
-const { app } = await import('./app.js');
-const porta = config.porta || 3000;
+const porta = Number(process.env.API_PORT) || 3001;
 
-app.listen(porta,()=>{
-    console.log(`Server rodando em http://localhost:${porta}`)
-});
+try {
+  await pool.query('SELECT 1');
+  app.listen(porta, () => {
+    console.log(`API de produtos disponível em http://localhost:${porta}`);
+  });
+} catch (erro) {
+  console.error('Não foi possível conectar ao MySQL. Confira o backend/.env e inicie novamente.');
+  console.error(`Código do erro: ${erro.code || 'desconhecido'}`);
+  process.exitCode = 1;
+  await pool.end();
+}

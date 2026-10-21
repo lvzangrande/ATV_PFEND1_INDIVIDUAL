@@ -1,24 +1,25 @@
+import 'dotenv/config';
 import mysql from 'mysql2/promise';
-import 'dotenv/config'
 
-export function criarPool(){
-    return mysql.createPool({
-        host: process.env.DB_HOST,
-        port: Number(process.env.DB_PORT),
-        user: process.env.DB_USER,
-        password: process.env.DB_PASS || '',
-        database: process.env.DB_NAME,
-        waitForConnections: true,
-        connectionLimit:10,
-        queueLimit:0
-    })
+const obrigatorias = ['DB_HOST', 'DB_USER', 'DB_NAME'];
+const ausentes = obrigatorias.filter((campo) => !process.env[campo]?.trim());
+
+if (ausentes.length > 0) {
+  throw new Error(`Configure as variáveis do MySQL no arquivo backend/.env: ${ausentes.join(', ')}.`);
 }
-const pool = criarPool();
 
-try {
-    await pool.query('SELECT 1');
-    console.log('Conexão MySQL OK');
-} catch (erro) {
-    console.error('Código:', erro.code);
-    console.error('Mensagem:', erro.message);
+export const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT) || 3306,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS || '',
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  decimalNumbers: true,
+});
+
+export function criarPool() {
+  return pool;
 }
