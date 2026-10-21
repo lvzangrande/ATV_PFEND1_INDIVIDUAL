@@ -8,6 +8,14 @@ O fluxo de venda registra somente produtos da tabela `produtos_LIVRES`; a API bl
 
 ## Banco de dados
 
+Para criar uma base nova com todas as tabelas e dados de demonstração em um único comando, execute na raiz do projeto:
+
+```bash
+mysql -u SEU_USUARIO -p < docs/database/estrutura.sql
+```
+
+O esquema e as tabelas estão documentados em [docs/database/README.md](docs/database/README.md). Para bases existentes, siga as migrations incrementais abaixo.
+
 1. Crie o banco `quimica` e as tabelas originais executando o arquivo `backend/migrations/20261019_base_do_banco.sql` no seu MySQL.
 2. Copie `backend/.env.example` para `backend/.env` e preencha as credenciais do seu banco; a porta da API é configurada por `API_PORT` (padrão: `3001`).
 3. Execute a migração que cria a tabela de vendas e insere produtos/vendas de exemplo:
