@@ -71,6 +71,7 @@ export default function Home() {
   const [quantidadeVenda, setQuantidadeVenda] = useState('1');
   const [aviso, setAviso] = useState('');
   const [erro, setErro] = useState('');
+  const [apiIndisponivel, setApiIndisponivel] = useState(false);
   const [atualizando, setAtualizando] = useState(false);
   const [registrandoVenda, setRegistrandoVenda] = useState(false);
   const [empresaDaVenda, setEmpresaDaVenda] = useState('');
@@ -102,8 +103,10 @@ export default function Home() {
       setResumo(dadosResumo);
       setEmpresas(listaEmpresas);
       setUsuarios(listaUsuarios);
+      setApiIndisponivel(false);
       setErro('');
     } catch (falha) {
+      setApiIndisponivel(true);
       setErro(falha.message);
     } finally {
       setCarregando(false);
@@ -350,8 +353,8 @@ export default function Home() {
           </nav>
           <div className="topbar-tools">
             <span className="topbar-note">
-              <i className={erro ? 'connection-dot connection-error' : 'connection-dot'} aria-hidden="true" />
-              {carregando ? 'Sincronizando' : erro ? 'Desconectado' : 'Conectado'}
+              <i className={apiIndisponivel ? 'connection-dot connection-error' : 'connection-dot'} aria-hidden="true" />
+              {carregando ? 'Sincronizando' : apiIndisponivel ? 'API indisponível' : 'Conectado'}
             </span>
             <a className="profile-link" href="#administracao" aria-label="Acessar investidores">
               <span className="profile-avatar" aria-hidden="true">D</span>
@@ -461,8 +464,8 @@ export default function Home() {
               ) : produtosFiltrados.length === 0 ? (
                 <div className="empty-state">
                   <span aria-hidden="true">▧</span>
-                  <strong>Nenhum ativo encontrado</strong>
-                  <p>Cadastre um ativo ou ajuste os filtros da busca.</p>
+                  <strong>{apiIndisponivel ? 'Não foi possível carregar sua carteira' : 'Sua carteira ainda está vazia'}</strong>
+                  <p>{apiIndisponivel ? 'Confira a conexão e tente novamente pelo aviso acima.' : 'Adicione seu primeiro ativo para começar.'}</p>
                 </div>
               ) : (
                 <div className="table-scroll">
@@ -510,7 +513,7 @@ export default function Home() {
                 <div><p className="overline">CARTEIRA</p><h2>{produtoEmEdicao ? 'Editar ativo' : 'Cadastrar ativo'}</h2></div>
                 {produtoEmEdicao && <button className="quiet-button" onClick={limparFormulario} type="button">Cancelar edição</button>}
               </div>
-              <form className="product-form" onSubmit={salvarProduto}>
+              <form className="product-form" id="form-produto" onSubmit={salvarProduto}>
                 <label className="form-field">
                   Nome ou ticker <span>*</span>
                   <input maxLength="255" name="nome" onChange={alterarCampo} required value={formulario.nome} disabled={salvando} />

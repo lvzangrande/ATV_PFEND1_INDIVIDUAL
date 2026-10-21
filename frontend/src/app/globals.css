@@ -32,7 +32,8 @@ body {
     linear-gradient(90deg, transparent 0 59px, #dce2d844 60px, transparent 61px),
     var(--background);
   color: var(--ink);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Segoe UI", "Aptos", sans-serif;
+  font-size: 15px;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -1259,6 +1260,119 @@ tbody tr:last-child td {
 .form-field textarea:focus {
   border-color: #6d9678;
   box-shadow: 0 0 0 2px #24704e18;
+}
+
+.top-nav a,
+.profile-link,
+.topbar-note {
+  font-size: 12px;
+}
+
+.brand small {
+  font-size: 9px;
+}
+
+.market-label {
+  font-size: 10px;
+}
+
+.market-quote {
+  font-size: 11px;
+}
+
+.market-quote strong,
+.market-quote em,
+.market-disclaimer {
+  font-size: 10px;
+}
+
+.market-quote b {
+  font-size: 11px;
+}
+
+.welcome > div > p:last-child {
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.overline {
+  font-size: 10px;
+}
+
+.welcome .primary-button,
+.primary-button,
+.secondary-button,
+.quiet-button {
+  font-size: 12px;
+}
+
+.stat-card p {
+  font-size: 11px;
+}
+
+.panel-heading .overline,
+.overview-heading .overline {
+  font-size: 9px;
+}
+
+.panel-heading h2,
+.overview-heading h2 {
+  font-size: 19px;
+}
+
+.record-count,
+.filter-tab,
+.search-box input,
+.form-field,
+.helper-copy,
+.form-guidance,
+.notice,
+.empty-state strong {
+  font-size: 12px;
+}
+
+th {
+  font-size: 10px;
+}
+
+td,
+.product-name,
+.sale-description strong,
+.sale-total,
+.admin-record strong {
+  font-size: 12px;
+}
+
+.product-description,
+.panel-footnote,
+.sale-description small,
+.admin-record small,
+.page-footer {
+  font-size: 10px;
+}
+
+.type-badge,
+.admin-submit,
+.admin-section-heading .quiet-button,
+.sales-empty,
+.admin-empty,
+.empty-state p {
+  font-size: 11px;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  min-height: 40px;
+  font-size: 12px;
+}
+
+.search-box {
+  height: 36px;
+}
+
+.stat-card {
+  min-height: 84px;
 }
 
 .type-badge {
