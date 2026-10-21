@@ -1,10 +1,10 @@
-# Química Comercial — produtos e vendas
+# Índice — carteira de investimentos
 
 ## O que foi implementado
 
-A interface Next.js consulta o MySQL por meio da API Express. Ela lista e filtra o catálogo, cadastra, edita e exclui produtos, empresas e usuários, registra vendas de produtos livres vinculadas opcionalmente a uma empresa e atualiza o estoque. Os produtos livres e controlados são administrados nas tabelas `produtos_LIVRES` e `produtos_NAO_LIVRES`; as categorias do formulário correspondem aos enums do esquema.
+A interface Next.js consulta o MySQL por meio da API Express. Ela organiza ativos negociáveis e monitorados, registra operações simuladas, atualiza posições e administra investidores e organizações vinculadas à carteira.
 
-O fluxo de venda registra somente produtos da tabela `produtos_LIVRES`; a API bloqueia vendas de produtos controlados. Confirme as autorizações e as regras aplicáveis antes de vender qualquer produto químico. O painel não implementa login/perfis e deve ser usado localmente, não publicado como sistema administrativo acessível pela rede.
+Os valores e registros iniciais são fictícios: o painel não consulta cotações ao vivo, não envia ordens a corretoras e não oferece recomendações financeiras. O painel não implementa login/perfis e deve ser usado localmente, não publicado como sistema administrativo acessível pela rede.
 
 ## Banco de dados
 
@@ -14,19 +14,19 @@ Para criar uma base nova com todas as tabelas e dados de demonstração em um ú
 mysql -u SEU_USUARIO -p < docs/database/estrutura.sql
 ```
 
-O esquema e as tabelas estão documentados em [docs/database/README.md](docs/database/README.md). Para bases existentes, siga as migrations incrementais abaixo.
+O esquema e as tabelas estão documentados em [docs/database/README.md](docs/database/README.md). Para aplicar em etapas, use as migrations abaixo.
 
-1. Crie o banco `db_indice` e as tabelas originais executando o arquivo `backend/migrations/20261019_base_do_banco.sql` no seu MySQL.
+1. Crie o banco `db_indice` e as tabelas da carteira executando `backend/migrations/20261019_base_do_banco.sql` no MySQL.
 2. Copie `backend/.env.example` para `backend/.env` e preencha as credenciais do seu banco; a porta da API é configurada por `API_PORT` (padrão: `3001`).
-3. Execute a migração que cria a tabela de vendas e insere produtos/vendas de exemplo:
+3. Execute a migration de operações e ativos fictícios:
 
 ```bash
-mysql -u SEU_USUARIO -p < backend/migrations/20261020_produtos_vendas_inserts.sql
+mysql -u SEU_USUARIO -p < backend/migrations/20261020_ativos_operacoes.sql
 ```
 
-Os produtos e as duas vendas de exemplo são genéricos; a empresa de demonstração e seu CNPJ também são fictícios. O script evita repetir os registros pelo nome/código. A migração alinha as categorias `ENUM`, cria a tabela de vendas, associa vendas opcionais a empresas e amplia `usuarios.senha` para guardar hashes. Faça backup antes de aplicá-la em uma base que já contenha produtos, pois a alteração do `ENUM` pode afetar valores legados. Senhas existentes não são convertidas automaticamente; usuários novos e senhas redefinidas pelo painel são armazenados com bcrypt.
+Os ativos, a corretora e as operações são fictícios, e os scripts evitam repetir registros de exemplo. Senhas existentes não são convertidas automaticamente; usuários novos e senhas redefinidas pelo painel são armazenados com bcrypt.
 
-No ambiente de desenvolvimento desta entrega, a migração foi aplicada e os `INSERT`s de exemplo foram confirmados no banco local `db_indice`.
+Para bancos com dados existentes, faça backup e adapte os dados ao novo esquema antes de executar a instalação. Não aplique o script de instalação sobre uma estrutura anterior esperando conversão automática.
 
 ## Executar a API e o Front-End
 
@@ -53,19 +53,19 @@ Abra `http://localhost:3000`. O endereço padrão da API é `http://localhost:30
 ## API
 
 - `GET /api/status`, `GET /api/dashboard`
-- `GET /api/produtos`, `GET /api/produtos/:tipo/:id`
-- `POST /api/produtos`, `PUT /api/produtos/:tipo/:id`, `DELETE /api/produtos/:tipo/:id`
+- `GET /api/ativos`, `GET /api/ativos/:status/:id`
+- `POST /api/ativos`, `PUT /api/ativos/:status/:id`, `DELETE /api/ativos/:status/:id`
 - `GET /api/empresas`, `POST /api/empresas`, `PUT /api/empresas/:id`, `DELETE /api/empresas/:id`
 - `GET /api/usuarios`, `POST /api/usuarios`, `PUT /api/usuarios/:id`, `DELETE /api/usuarios/:id`
 - `GET /api/vendas`, `POST /api/vendas`
 
-Os cadastros validam os campos e protegem as restrições de unicidade do banco. Senhas nunca são retornadas pela API e os novos valores são armazenados com bcrypt. O registro de venda usa transação e bloqueio da linha do produto; assim, verifica o estoque e atualiza a quantidade atomicamente. Vendas já registradas impedem que os produtos e empresas associados sejam apagados.
+Os cadastros validam os campos e protegem as restrições de unicidade do banco. Senhas nunca são retornadas pela API e os novos valores são armazenados com bcrypt. O registro de venda usa transação e bloqueio da linha do ativo; assim, verifica a posição e atualiza a quantidade atomicamente. Operações já registradas impedem que os ativos e organizações associados sejam apagados.
 
 ## Arquivos principais
 
 - `backend/app.js`: rotas Express, validações e operações no MySQL.
 - `backend/config/database.js`: pool de conexões MySQL.
-- `frontend/src/app/page.jsx`: painel, catálogo, formulários e vendas.
+- `frontend/src/app/page.jsx`: painel da carteira, formulários e operações.
 - `frontend/src/services/api.js`: chamadas HTTP da interface.
 - `backend/migrations/20261019_base_do_banco.sql`: esquema original compartilhado.
-- `backend/migrations/20261020_produtos_vendas_inserts.sql`: tabela de vendas e dados iniciais.
+- `backend/migrations/20261020_ativos_operacoes.sql`: tabela de operações e dados iniciais.
